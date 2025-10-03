@@ -1,3 +1,3 @@
 pub type Operator {
-  Var
+  StrictEquals
 }

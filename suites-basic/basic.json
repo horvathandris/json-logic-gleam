@@ -7,5 +7,21 @@
   { "description": "\"apple\"", "rule": "apple", "result": "apple" },
   { "description": "null", "rule": null, "result": null },
   { "description": "[\"a\",\"b\"]", "rule": ["a", "b"], "result": ["a", "b"] },
+  "# Single operator tests",
+  {
+    "description": "{\"==\":[1,1]}",
+    "rule": { "==": [1, 1] },
+    "result": true
+  },
+  {
+    "description": "{\"==\":[1,\"1\"]}",
+    "rule": { "==": [1, "1"] },
+    "result": true
+  },
+  {
+    "description": "{\"==\":[1,2]}",
+    "rule": { "==": [1, 2] },
+    "result": false
+  },
   "EOF"
 ]
