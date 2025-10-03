@@ -1,0 +1,11 @@
+[
+  "# Non-rules get passed through",
+  { "description": "true", "rule": true, "result": true },
+  { "description": "false", "rule": false, "result": false },
+  { "description": "17", "rule": 17, "result": 17 },
+  { "description": "3.14", "rule": 3.14, "result": 3.14 },
+  { "description": "\"apple\"", "rule": "apple", "result": "apple" },
+  { "description": "null", "rule": null, "result": null },
+  { "description": "[\"a\",\"b\"]", "rule": ["a", "b"], "result": ["a", "b"] },
+  "EOF"
+]
