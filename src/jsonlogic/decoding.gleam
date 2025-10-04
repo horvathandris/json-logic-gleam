@@ -75,7 +75,7 @@ pub fn decode_operator(
   operator: String,
 ) -> Result(operator.Operator, evaluation.EvaluationError) {
   case operator {
-    "==" -> Ok(operator.StrictEquals)
+    "===" -> Ok(operator.StrictEquals)
     _ -> Error(evaluation.UnknownOperatorError(operator))
   }
 }

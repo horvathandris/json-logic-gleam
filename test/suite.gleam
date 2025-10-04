@@ -5,7 +5,6 @@ import gleam/json
 import gleam/list
 import gleam/option.{type Option}
 import gleam/result
-import gleeunit/should
 import jsonlogic
 import simplifile
 
@@ -14,36 +13,51 @@ pub type TestCase {
     description: String,
     logic: Dynamic,
     data: Option(Dynamic),
-    result: TestCaseResult,
+    result: ExpectedResult,
     error: Option(Dynamic),
   )
 }
 
-pub type TestCaseResult {
+pub type ExpectedResult {
   NoResult
   SomeResult(Dynamic)
 }
 
-pub fn run_test_cases(suite: TestSuite) {
+pub type TestCaseResult {
+  Passed
+  Failed
+}
+
+pub fn run_test_cases(suite: TestSuite) -> List(#(String, TestCaseResult)) {
   list.map(suite.test_cases, run_test_case)
 }
 
-pub fn run_test_case(test_case: TestCase) {
+pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
   echo test_case
   let actual = jsonlogic.apply(test_case.logic)
 
-  case test_case.result {
+  let test_case_result = case test_case.result {
     SomeResult(expected) ->
-      actual
-      |> should.be_ok
-      |> should.equal(expected)
+      case actual == Ok(expected) {
+        True -> Passed
+        False -> Failed
+      }
     NoResult -> todo
+  }
+
+  #(test_case.description, test_case_result)
+}
+
+fn normalize_dynamic(value: Dynamic) -> Dynamic {
+  case dynamic.classify(value) {
+    "Nil" -> dynamic.nil()
+    _ -> value
   }
 }
 
 fn test_case_decoder() {
   use description <- decode.field("description", decode.string)
-  use logic <- decode.field("rule", decode.string)
+  use logic <- decode.field("rule", decode.dynamic)
   use data <- decode.optional_field(
     "data",
     option.None,
@@ -52,7 +66,9 @@ fn test_case_decoder() {
   use result <- decode.optional_field(
     "result",
     NoResult,
-    decode.map(decode.dynamic, SomeResult),
+    decode.dynamic
+      |> decode.map(normalize_dynamic)
+      |> decode.map(SomeResult),
   )
   use error <- decode.optional_field(
     "error",

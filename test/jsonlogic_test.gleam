@@ -1,3 +1,4 @@
+import gleam/dict
 import gleam/list
 import gleeunit
 import suite
@@ -7,9 +8,16 @@ pub fn main() {
 }
 
 pub fn run_test_suites__test() {
-  use test_suite <- list.map(suite.load_test_suites("suites-basic"))
+  suite.load_test_suites("suites-basic")
+  |> collect_test_results
+  |> echo
+}
 
-  echo test_suite.name
+fn collect_test_results(
+  test_suites: List(suite.TestSuite),
+) -> dict.Dict(String, List(#(String, suite.TestCaseResult))) {
+  use results, test_suite <- list.fold(test_suites, dict.new())
 
-  suite.run_test_cases(test_suite)
+  results
+  |> dict.insert(test_suite.name, suite.run_test_cases(test_suite))
 }

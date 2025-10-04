@@ -9,18 +9,18 @@
   { "description": "[\"a\",\"b\"]", "rule": ["a", "b"], "result": ["a", "b"] },
   "# Single operator tests",
   {
-    "description": "{\"==\":[1,1]}",
-    "rule": { "==": [1, 1] },
+    "description": "{\"===\":[1,1]}",
+    "rule": { "===": [1, 1] },
     "result": true
   },
   {
-    "description": "{\"==\":[1,\"1\"]}",
-    "rule": { "==": [1, "1"] },
-    "result": true
+    "description": "{\"===\":[1,\"1\"]}",
+    "rule": { "===": [1, "1"] },
+    "result": false
   },
   {
-    "description": "{\"==\":[1,2]}",
-    "rule": { "==": [1, 2] },
+    "description": "{\"===\":[1,2]}",
+    "rule": { "===": [1, 2] },
     "result": false
   },
   "EOF"
