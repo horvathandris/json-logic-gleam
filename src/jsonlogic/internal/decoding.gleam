@@ -3,13 +3,13 @@ import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/list
 import gleam/result
-import jsonlogic/evaluation
-import jsonlogic/operator
-import jsonlogic/rule
+import jsonlogic/internal/error
+import jsonlogic/internal/operator
+import jsonlogic/internal/rule
 
 pub fn decode_rule(
   rule: dynamic.Dynamic,
-) -> Result(rule.Rule, evaluation.EvaluationError) {
+) -> Result(rule.Rule, error.EvaluationError) {
   case dynamic.classify(rule) {
     "Bool" | "String" | "Int" | "Float" | "Nil" | "Array" | "List" ->
       Ok(rule.Literal(decode_literal(rule)))
@@ -17,18 +17,18 @@ pub fn decode_rule(
       let decoding_result =
         decode.run(rule, decode.dict(decode.string, decode.dynamic))
         |> result.map(dict.to_list)
-        |> result.map_error(evaluation.DecodeError)
+        |> result.map_error(error.DecodeError)
 
       use decoded_entries <- result.try(decoding_result)
       let raw_rule =
         list.first(decoded_entries)
         |> result.map_error(fn(_) {
-          evaluation.InvalidRuleError("no operator in rule")
+          error.InvalidRuleError("no operator in rule")
         })
         |> result.try(fn(rule) {
           decode.run(rule.1, decode.list(decode.dynamic))
           |> result.map_error(fn(_) {
-            evaluation.InvalidRuleError("values are not a list")
+            error.InvalidRuleError("values are not a list")
           })
           |> result.map(fn(values) { #(rule.0, values) })
         })
@@ -73,9 +73,16 @@ fn decode_literal(literal: dynamic.Dynamic) -> rule.JsonLiteral {
 
 pub fn decode_operator(
   operator: String,
-) -> Result(operator.Operator, evaluation.EvaluationError) {
+) -> Result(operator.Operator, error.EvaluationError) {
   case operator {
+    "==" -> Ok(operator.AbstractEquals)
+    "!=" -> Ok(operator.AbstractNotEquals)
     "===" -> Ok(operator.StrictEquals)
-    _ -> Error(evaluation.UnknownOperatorError(operator))
+    "!==" -> Ok(operator.StrictNotEquals)
+    ">" -> Ok(operator.GreaterThan)
+    "<" -> Ok(operator.LessThan)
+    ">=" -> Ok(operator.GreaterThanOrEqual)
+    "<=" -> Ok(operator.LessThanOrEqual)
+    _ -> Error(error.UnknownOperatorError(operator))
   }
 }

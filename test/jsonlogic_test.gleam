@@ -1,6 +1,7 @@
 import gleam/dict
 import gleam/list
 import gleeunit
+import reporting
 import suite
 
 pub fn main() {
@@ -10,7 +11,7 @@ pub fn main() {
 pub fn run_test_suites__test() {
   suite.load_test_suites("suites-basic")
   |> collect_test_results
-  |> echo
+  |> reporting.test_report
 }
 
 fn collect_test_results(

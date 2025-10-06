@@ -1,4 +1,4 @@
-import jsonlogic/operator.{type Operator}
+import jsonlogic/internal/operator.{type Operator}
 
 pub type Rule {
   Literal(JsonLiteral)
