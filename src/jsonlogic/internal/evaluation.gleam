@@ -1,3 +1,4 @@
+import gleam/bool
 import gleam/dynamic
 import gleam/list
 import gleam/result
@@ -56,6 +57,9 @@ pub fn evaluate_operation(
       |> result.map(dynamic.bool)
     operator.LessThanOrEqual ->
       less_than_or_equal(values)
+      |> result.map(dynamic.bool)
+    operator.Negate ->
+      negate(values)
       |> result.map(dynamic.bool)
   }
 }
@@ -132,4 +136,15 @@ fn less_than_or_equal(
 ) -> Result(Bool, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
   util.comparison_reduce(evaluated_values, fn(a, b) { a <=. b })
+}
+
+fn negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
+  case values {
+    [value] -> {
+      use evaluated_value <- result.try(evaluate(value))
+      use bool_value <- result.map(util.dynamic_to_bool(evaluated_value))
+      bool.negate(bool_value)
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
 }

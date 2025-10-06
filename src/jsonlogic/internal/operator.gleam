@@ -7,4 +7,6 @@ pub type Operator {
   LessThan
   GreaterThanOrEqual
   LessThanOrEqual
+
+  Negate
 }

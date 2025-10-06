@@ -173,5 +173,19 @@
     "rule": { "<=": [1, 4, 3] },
     "result": false
   },
+  {
+    "description": "{\"!\":[false]}",
+    "rule": { "!": [false] },
+    "result": true
+  },
+  { "description": "{\"!\":false}", "rule": { "!": false }, "result": true },
+  {
+    "description": "{\"!\":[true]}",
+    "rule": { "!": [true] },
+    "result": false
+  },
+  { "description": "{\"!\":true}", "rule": { "!": true }, "result": false },
+  { "description": "{\"!\":0}", "rule": { "!": 0 }, "result": true },
+  { "description": "{\"!\":1}", "rule": { "!": 1 }, "result": false },
   "EOF"
 ]

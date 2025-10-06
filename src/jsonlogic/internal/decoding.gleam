@@ -83,6 +83,7 @@ pub fn decode_operator(
     "<" -> Ok(operator.LessThan)
     ">=" -> Ok(operator.GreaterThanOrEqual)
     "<=" -> Ok(operator.LessThanOrEqual)
+    "!" -> Ok(operator.Negate)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }

@@ -30,6 +30,17 @@ pub fn dynamic_to_float(
   }
 }
 
+pub fn dynamic_to_bool(input: dynamic.Dynamic) {
+  case dynamic.classify(input) {
+    "Bool" -> {
+      let assert Ok(decoded) = decode.run(input, decode.bool)
+      Ok(decoded)
+    }
+
+    t -> panic as { "Cannot convert type: " <> t }
+  }
+}
+
 pub fn comparison_reduce(
   values: List(dynamic.Dynamic),
   operator: fn(Float, Float) -> Bool,
