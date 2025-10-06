@@ -8,7 +8,10 @@ pub fn test_report(
   results: dict.Dict(String, List(#(String, suite.TestCaseResult))),
 ) {
   use suite, test_results <- dict.each(results)
-  io.println(suite)
+  { "\n" <> suite }
+  |> ansi.bold
+  |> ansi.underline
+  |> io.println
   use #(test_description, test_result) <- list.each(test_results)
   {
     ansi.bold(test_description <> ": ")

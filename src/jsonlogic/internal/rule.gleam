@@ -10,6 +10,6 @@ pub type JsonLiteral {
   StringLiteral(value: String)
   IntLiteral(value: Int)
   FloatLiteral(value: Float)
-  ArrayLiteral(value: List(JsonLiteral))
+  ArrayLiteral(value: List(Rule))
   NilLiteral
 }

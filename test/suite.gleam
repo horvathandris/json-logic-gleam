@@ -33,9 +33,9 @@ pub fn run_test_cases(suite: TestSuite) -> List(#(String, TestCaseResult)) {
 }
 
 pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
-  echo test_case
+  // echo test_case
   let actual = jsonlogic.apply(test_case.logic)
-  echo actual
+  // echo actual
 
   let test_case_result = case test_case.result {
     SomeResult(expected) ->
@@ -43,7 +43,7 @@ pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
         True -> Passed
         False -> Failed
       }
-    NoResult -> todo
+    NoResult -> panic as "Test case without result is not supported yet"
   }
 
   #(test_case.description, test_case_result)

@@ -1,6 +1,8 @@
 import gleam/dict
 import gleam/dynamic
 import gleam/dynamic/decode
+import gleam/float
+import gleam/int
 import gleam/list
 import gleam/result
 import jsonlogic/internal/error
@@ -26,22 +28,23 @@ pub fn decode_rule(
           error.InvalidRuleError("no operator in rule")
         })
         |> result.try(fn(rule) {
-          decode.run(rule.1, decode.list(decode.dynamic))
-          |> result.map_error(fn(_) {
-            error.InvalidRuleError("values are not a list")
+          decode_rule(rule.1)
+          |> result.map(fn(values) {
+            case values {
+              rule.Literal(rule.ArrayLiteral(inner_values)) -> #(
+                rule.0,
+                inner_values,
+              )
+              other_rule -> #(rule.0, [other_rule])
+            }
           })
-          |> result.map(fn(values) { #(rule.0, values) })
         })
 
       use #(operator, values) <- result.try(raw_rule)
-      use typed_operator <- result.try(decode_operator(operator))
-      use typed_values <- result.map(list.try_map(values, decode_rule))
-      rule.Operation(typed_operator, typed_values)
+      use typed_operator <- result.map(decode_operator(operator))
+      rule.Operation(typed_operator, values)
     }
-    x -> {
-      echo x
-      todo
-    }
+    unrecognized -> panic as { "Unrecognized rule: " <> unrecognized }
   }
 }
 
@@ -63,6 +66,7 @@ fn decode_literal(literal: dynamic.Dynamic) -> rule.JsonLiteral {
     "Array" | "List" -> {
       decode.run(literal, decode.list(decode.dynamic))
       |> result.map(list.map(_, decode_literal))
+      |> result.map(list.map(_, rule.Literal))
       |> result.map(rule.ArrayLiteral)
     }
     t -> panic as { "Unsupported literal type" <> t }
@@ -85,5 +89,46 @@ pub fn decode_operator(
     "<=" -> Ok(operator.LessThanOrEqual)
     "!" -> Ok(operator.Negate)
     _ -> Error(error.UnknownOperatorError(operator))
+  }
+}
+
+pub fn dynamic_to_float(
+  input: dynamic.Dynamic,
+) -> Result(Float, error.EvaluationError) {
+  case dynamic.classify(input) {
+    "String" -> {
+      let assert Ok(decoded) = decode.run(input, decode.string)
+      int.parse(decoded)
+      |> result.map(int.to_float)
+      |> result.try_recover(fn(_) { float.parse(decoded) })
+      |> result.map_error(fn(_) { error.NaNError })
+    }
+    "Float" -> {
+      let assert Ok(decoded) = decode.run(input, decode.float)
+      Ok(decoded)
+    }
+    "Int" -> {
+      let assert Ok(decoded) = decode.run(input, decode.int)
+      Ok(int.to_float(decoded))
+    }
+
+    t -> panic as { "Cannot convert type: " <> t }
+  }
+}
+
+pub fn dynamic_to_bool(
+  input: dynamic.Dynamic,
+) -> Result(Bool, error.EvaluationError) {
+  case dynamic.classify(input) {
+    "Bool" -> {
+      let assert Ok(decoded) = decode.run(input, decode.bool)
+      Ok(decoded)
+    }
+    "Int" -> {
+      let assert Ok(decoded) = decode.run(input, decode.int)
+      Ok(decoded != 0)
+    }
+
+    t -> panic as { "Cannot convert type: " <> t }
   }
 }

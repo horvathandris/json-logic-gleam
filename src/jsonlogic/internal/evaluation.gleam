@@ -2,6 +2,7 @@ import gleam/bool
 import gleam/dynamic
 import gleam/list
 import gleam/result
+import jsonlogic/internal/decoding
 import jsonlogic/internal/error
 import jsonlogic/internal/operator
 import jsonlogic/internal/rule
@@ -11,21 +12,23 @@ pub fn evaluate(
   rule: rule.Rule,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   case rule {
-    rule.Literal(literal) -> Ok(evaluate_literal(literal))
+    rule.Literal(literal) -> evaluate_literal(literal)
     rule.Operation(operator, values) -> evaluate_operation(operator, values)
   }
 }
 
-pub fn evaluate_literal(literal: rule.JsonLiteral) -> dynamic.Dynamic {
+pub fn evaluate_literal(
+  literal: rule.JsonLiteral,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
   case literal {
-    rule.BoolLiteral(value) -> dynamic.bool(value)
-    rule.StringLiteral(value) -> dynamic.string(value)
-    rule.IntLiteral(value) -> dynamic.int(value)
-    rule.FloatLiteral(value) -> dynamic.float(value)
-    rule.ArrayLiteral(value) ->
-      list.map(value, evaluate_literal)
-      |> dynamic.list
-    rule.NilLiteral -> dynamic.nil()
+    rule.BoolLiteral(value) -> Ok(dynamic.bool(value))
+    rule.StringLiteral(value) -> Ok(dynamic.string(value))
+    rule.IntLiteral(value) -> Ok(dynamic.int(value))
+    rule.FloatLiteral(value) -> Ok(dynamic.float(value))
+    rule.ArrayLiteral(values) ->
+      list.try_map(values, evaluate)
+      |> result.map(dynamic.list)
+    rule.NilLiteral -> Ok(dynamic.nil())
   }
 }
 
@@ -69,8 +72,8 @@ fn abstract_equals(values: List(rule.Rule)) {
     [first, second] -> {
       use first <- result.try(evaluate(first))
       use second <- result.try(evaluate(second))
-      use first <- result.try(util.dynamic_to_float(first))
-      use second <- result.try(util.dynamic_to_float(second))
+      use first <- result.try(decoding.dynamic_to_float(first))
+      use second <- result.try(decoding.dynamic_to_float(second))
       Ok(first == second)
     }
     _ -> Error(error.InvalidArgumentsError)
@@ -82,8 +85,8 @@ fn abstract_not_equals(values: List(rule.Rule)) {
     [first, second] -> {
       use first <- result.try(evaluate(first))
       use second <- result.try(evaluate(second))
-      use first <- result.try(util.dynamic_to_float(first))
-      use second <- result.try(util.dynamic_to_float(second))
+      use first <- result.try(decoding.dynamic_to_float(first))
+      use second <- result.try(decoding.dynamic_to_float(second))
       Ok(first != second)
     }
     _ -> Error(error.InvalidArgumentsError)
@@ -142,7 +145,7 @@ fn negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
   case values {
     [value] -> {
       use evaluated_value <- result.try(evaluate(value))
-      use bool_value <- result.map(util.dynamic_to_bool(evaluated_value))
+      use bool_value <- result.map(decoding.dynamic_to_bool(evaluated_value))
       bool.negate(bool_value)
     }
     _ -> Error(error.InvalidArgumentsError)
