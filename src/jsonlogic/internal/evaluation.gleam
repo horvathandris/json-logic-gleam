@@ -169,7 +169,8 @@ fn or(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError)
       False -> Error(Nil)
     }
   })
-  |> result.try_recover(fn(_) { Ok(dynamic.bool(False)) })
+  |> result.unwrap(dynamic.bool(False))
+  |> Ok
 }
 
 fn and(
@@ -185,7 +186,8 @@ fn and(
       list.last(bool_values)
       |> result.map(fn(value) { value.1 })
       // empty list case
-      |> result.try_recover(fn(_) { Ok(dynamic.bool(True)) })
+      |> result.unwrap(dynamic.bool(True))
+      |> Ok
     False -> Ok(dynamic.bool(False))
   }
 }

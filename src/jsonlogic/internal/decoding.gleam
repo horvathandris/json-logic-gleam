@@ -3,11 +3,20 @@ import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/float
 import gleam/int
+import gleam/json
 import gleam/list
 import gleam/result
 import jsonlogic/internal/error
 import jsonlogic/internal/operator
 import jsonlogic/internal/rule
+
+pub fn decode_rule_string(
+  rule: String,
+) -> Result(rule.Rule, error.EvaluationError) {
+  json.parse(rule, using: decode.dynamic)
+  |> result.map_error(error.JsonDecodeError)
+  |> result.try(decode_rule)
+}
 
 pub fn decode_rule(
   rule: dynamic.Dynamic,

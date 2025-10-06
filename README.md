@@ -9,8 +9,8 @@ gleam add jsonlogic@1
 ```gleam
 import jsonlogic
 
-pub fn main() -> Nil {
-  // TODO: An example of the project in use
+pub fn main() {
+  echo jsonlogic.apply(" { \"==\" : [1, 1] } ") // Ok(True)
 }
 ```
 
