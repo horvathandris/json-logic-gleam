@@ -25,6 +25,6 @@ pub fn dynamic_to_float(
       Ok(int.to_float(decoded))
     }
 
-    _ -> todo
+    t -> panic as { "Cannot convert type: " <> t }
   }
 }

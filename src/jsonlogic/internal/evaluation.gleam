@@ -111,26 +111,46 @@ fn strict_not_equals(
 }
 
 fn greater_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
-  case values {
-    [first, second] -> {
-      use first <- result.try(evaluate(first))
-      use second <- result.try(evaluate(second))
-      use first <- result.try(util.dynamic_to_float(first))
-      use second <- result.try(util.dynamic_to_float(second))
-      Ok(first >. second)
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use coerced_values <- result.try(list.try_map(
+    evaluated_values,
+    util.dynamic_to_float,
+  ))
+
+  case coerced_values {
+    [first, second] -> Ok(first >. second)
+    [first, ..rest] -> {
+      let result =
+        list.fold_until(rest, #(first, True), fn(previous, current) {
+          case previous.0 >. current {
+            True -> list.Continue(#(current, True))
+            False -> list.Stop(#(current, False))
+          }
+        })
+      Ok(result.1)
     }
     _ -> Error(error.InvalidArgumentsError)
   }
 }
 
 fn less_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
-  case values {
-    [first, second] -> {
-      use first <- result.try(evaluate(first))
-      use second <- result.try(evaluate(second))
-      use first <- result.try(util.dynamic_to_float(first))
-      use second <- result.try(util.dynamic_to_float(second))
-      Ok(first <. second)
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use coerced_values <- result.try(list.try_map(
+    evaluated_values,
+    util.dynamic_to_float,
+  ))
+
+  case coerced_values {
+    [first, second] -> Ok(first <. second)
+    [first, ..rest] -> {
+      let result =
+        list.fold_until(rest, #(first, True), fn(previous, current) {
+          case previous.0 <. current {
+            True -> list.Continue(#(current, True))
+            False -> list.Stop(#(current, False))
+          }
+        })
+      Ok(result.1)
     }
     _ -> Error(error.InvalidArgumentsError)
   }
@@ -139,13 +159,23 @@ fn less_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
 fn greater_than_or_equal(
   values: List(rule.Rule),
 ) -> Result(Bool, error.EvaluationError) {
-  case values {
-    [first, second] -> {
-      use first <- result.try(evaluate(first))
-      use second <- result.try(evaluate(second))
-      use first <- result.try(util.dynamic_to_float(first))
-      use second <- result.try(util.dynamic_to_float(second))
-      Ok(first >=. second)
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use coerced_values <- result.try(list.try_map(
+    evaluated_values,
+    util.dynamic_to_float,
+  ))
+
+  case coerced_values {
+    [first, second] -> Ok(first >=. second)
+    [first, ..rest] -> {
+      let result =
+        list.fold_until(rest, #(first, True), fn(previous, current) {
+          case previous.0 >=. current {
+            True -> list.Continue(#(current, True))
+            False -> list.Stop(#(current, False))
+          }
+        })
+      Ok(result.1)
     }
     _ -> Error(error.InvalidArgumentsError)
   }
@@ -154,13 +184,23 @@ fn greater_than_or_equal(
 fn less_than_or_equal(
   values: List(rule.Rule),
 ) -> Result(Bool, error.EvaluationError) {
-  case values {
-    [first, second] -> {
-      use first <- result.try(evaluate(first))
-      use second <- result.try(evaluate(second))
-      use first <- result.try(util.dynamic_to_float(first))
-      use second <- result.try(util.dynamic_to_float(second))
-      Ok(first <=. second)
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use coerced_values <- result.try(list.try_map(
+    evaluated_values,
+    util.dynamic_to_float,
+  ))
+
+  case coerced_values {
+    [first, second] -> Ok(first <=. second)
+    [first, ..rest] -> {
+      let result =
+        list.fold_until(rest, #(first, True), fn(previous, current) {
+          case previous.0 <=. current {
+            True -> list.Continue(#(current, True))
+            False -> list.Stop(#(current, False))
+          }
+        })
+      Ok(result.1)
     }
     _ -> Error(error.InvalidArgumentsError)
   }
