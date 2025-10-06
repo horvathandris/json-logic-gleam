@@ -100,6 +100,7 @@ pub fn decode_operator(
     "or" -> Ok(operator.Or)
     "and" -> Ok(operator.And)
     "?:" -> Ok(operator.Conditional)
+    "in" -> Ok(operator.In)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }

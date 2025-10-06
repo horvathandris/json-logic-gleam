@@ -14,4 +14,6 @@ pub type Operator {
   And
 
   Conditional
+
+  In
 }

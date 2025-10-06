@@ -1,7 +1,9 @@
 import gleam/bool
 import gleam/dynamic
+import gleam/dynamic/decode
 import gleam/list
 import gleam/result
+import gleam/string
 import jsonlogic/internal/decoding
 import jsonlogic/internal/error
 import jsonlogic/internal/operator
@@ -67,6 +69,7 @@ pub fn evaluate_operation(
     operator.Or -> or(values)
     operator.And -> and(values)
     operator.Conditional -> conditional(values)
+    operator.In -> in(values)
   }
 }
 
@@ -205,6 +208,35 @@ pub fn conditional(
     [#(False, _), #(_, second)] -> Ok(second)
     [#(True, _), #(_, second), _] -> Ok(second)
     [#(False, _), _, #(_, third)] -> Ok(third)
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+pub fn in(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  case evaluated_values {
+    [] | [_] -> Ok(dynamic.bool(False))
+    [first, second] ->
+      case dynamic.classify(first), dynamic.classify(second) {
+        "String", "String" -> {
+          let assert Ok(first) = decode.run(first, decode.string)
+          let assert Ok(second) = decode.run(second, decode.string)
+          string.contains(does: second, contain: first)
+          |> dynamic.bool
+          |> Ok
+        }
+        "String", "Array" | "String", "List" -> {
+          let assert Ok(first) = decode.run(first, decode.string)
+          // todo: make this safer
+          let assert Ok(second) = decode.run(second, decode.list(decode.string))
+          list.contains(second, any: first)
+          |> dynamic.bool
+          |> Ok
+        }
+        _, _ -> Error(error.InvalidArgumentsError)
+      }
     _ -> Error(error.InvalidArgumentsError)
   }
 }

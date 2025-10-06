@@ -307,5 +307,29 @@
     "rule": { "?:": [true, 1, 2] },
     "result": 1
   },
+  {
+    "description": "{\"in\":[\"Bart\",[\"Bart\",\"Homer\",\"Lisa\",\"Marge\",\"Maggie\"]]}",
+    "rule": {
+      "in": ["Bart", ["Bart", "Homer", "Lisa", "Marge", "Maggie"]]
+    },
+    "result": true
+  },
+  {
+    "description": "{\"in\":[\"Milhouse\",[\"Bart\",\"Homer\",\"Lisa\",\"Marge\",\"Maggie\"]]}",
+    "rule": {
+      "in": ["Milhouse", ["Bart", "Homer", "Lisa", "Marge", "Maggie"]]
+    },
+    "result": false
+  },
+  {
+    "description": "{\"in\":[\"Spring\",\"Springfield\"]}",
+    "rule": { "in": ["Spring", "Springfield"] },
+    "result": true
+  },
+  {
+    "description": "{\"in\":[\"i\",\"team\"]}",
+    "rule": { "in": ["i", "team"] },
+    "result": false
+  },
   "EOF"
 ]
