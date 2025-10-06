@@ -9,4 +9,7 @@ pub type Operator {
   LessThanOrEqual
 
   Negate
+
+  Or
+  And
 }

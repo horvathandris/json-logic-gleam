@@ -88,6 +88,8 @@ pub fn decode_operator(
     ">=" -> Ok(operator.GreaterThanOrEqual)
     "<=" -> Ok(operator.LessThanOrEqual)
     "!" -> Ok(operator.Negate)
+    "or" -> Ok(operator.Or)
+    "and" -> Ok(operator.And)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
@@ -118,15 +120,15 @@ pub fn dynamic_to_float(
 
 pub fn dynamic_to_bool(
   input: dynamic.Dynamic,
-) -> Result(Bool, error.EvaluationError) {
+) -> Result(#(Bool, dynamic.Dynamic), error.EvaluationError) {
   case dynamic.classify(input) {
     "Bool" -> {
       let assert Ok(decoded) = decode.run(input, decode.bool)
-      Ok(decoded)
+      Ok(#(decoded, input))
     }
     "Int" -> {
       let assert Ok(decoded) = decode.run(input, decode.int)
-      Ok(decoded != 0)
+      Ok(#(decoded != 0, input))
     }
 
     t -> panic as { "Cannot convert type: " <> t }

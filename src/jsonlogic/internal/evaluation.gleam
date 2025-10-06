@@ -64,6 +64,8 @@ pub fn evaluate_operation(
     operator.Negate ->
       negate(values)
       |> result.map(dynamic.bool)
+    operator.Or -> or(values)
+    operator.And -> and(values)
   }
 }
 
@@ -145,9 +147,44 @@ fn negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
   case values {
     [value] -> {
       use evaluated_value <- result.try(evaluate(value))
-      use bool_value <- result.map(decoding.dynamic_to_bool(evaluated_value))
+      use #(bool_value, _) <- result.map(decoding.dynamic_to_bool(
+        evaluated_value,
+      ))
       bool.negate(bool_value)
     }
     _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn or(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use bool_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_bool,
+  ))
+  list.find_map(bool_values, fn(value) {
+    case value.0 {
+      True -> Ok(value.1)
+      False -> Error(Nil)
+    }
+  })
+  |> result.try_recover(fn(_) { Ok(dynamic.bool(False)) })
+}
+
+fn and(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use bool_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_bool,
+  ))
+  case list.all(bool_values, fn(value) { value.0 }) {
+    True ->
+      list.last(bool_values)
+      |> result.map(fn(value) { value.1 })
+      // empty list case
+      |> result.try_recover(fn(_) { Ok(dynamic.bool(True)) })
+    False -> Ok(dynamic.bool(False))
   }
 }

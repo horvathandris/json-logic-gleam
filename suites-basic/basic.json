@@ -187,5 +187,115 @@
   { "description": "{\"!\":true}", "rule": { "!": true }, "result": false },
   { "description": "{\"!\":0}", "rule": { "!": 0 }, "result": true },
   { "description": "{\"!\":1}", "rule": { "!": 1 }, "result": false },
+  {
+    "description": "{\"or\":[true,true]}",
+    "rule": { "or": [true, true] },
+    "result": true
+  },
+  {
+    "description": "{\"or\":[false,true]}",
+    "rule": { "or": [false, true] },
+    "result": true
+  },
+  {
+    "description": "{\"or\":[true,false]}",
+    "rule": { "or": [true, false] },
+    "result": true
+  },
+  {
+    "description": "{\"or\":[false,false]}",
+    "rule": { "or": [false, false] },
+    "result": false
+  },
+  {
+    "description": "{\"or\":[false,false,true]}",
+    "rule": { "or": [false, false, true] },
+    "result": true
+  },
+  {
+    "description": "{\"or\":[false,false,false]}",
+    "rule": { "or": [false, false, false] },
+    "result": false
+  },
+  {
+    "description": "{\"or\":[false]}",
+    "rule": { "or": [false] },
+    "result": false
+  },
+  {
+    "description": "{\"or\":[true]}",
+    "rule": { "or": [true] },
+    "result": true
+  },
+  {
+    "description": "{\"or\":[1,3]}",
+    "rule": { "or": [1, 3] },
+    "result": 1
+  },
+  {
+    "description": "{\"or\":[3,false]}",
+    "rule": { "or": [3, false] },
+    "result": 3
+  },
+  {
+    "description": "{\"or\":[false,3]}",
+    "rule": { "or": [false, 3] },
+    "result": 3
+  },
+  {
+    "description": "{\"and\":[true,true]}",
+    "rule": { "and": [true, true] },
+    "result": true
+  },
+  {
+    "description": "{\"and\":[false,true]}",
+    "rule": { "and": [false, true] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[true,false]}",
+    "rule": { "and": [true, false] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[false,false]}",
+    "rule": { "and": [false, false] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[true,true,true]}",
+    "rule": { "and": [true, true, true] },
+    "result": true
+  },
+  {
+    "description": "{\"and\":[true,true,false]}",
+    "rule": { "and": [true, true, false] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[false]}",
+    "rule": { "and": [false] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[true]}",
+    "rule": { "and": [true] },
+    "result": true
+  },
+  {
+    "description": "{\"and\":[1,3]}",
+    "rule": { "and": [1, 3] },
+    "result": 3
+  },
+  {
+    "description": "{\"and\":[3,false]}",
+    "rule": { "and": [3, false] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[false,3]}",
+    "rule": { "and": [false, 3] },
+    "result": false
+  },
   "EOF"
 ]
