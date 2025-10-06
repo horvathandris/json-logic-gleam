@@ -66,6 +66,7 @@ pub fn evaluate_operation(
       |> result.map(dynamic.bool)
     operator.Or -> or(values)
     operator.And -> and(values)
+    operator.Conditional -> conditional(values)
   }
 }
 
@@ -186,5 +187,22 @@ fn and(
       // empty list case
       |> result.try_recover(fn(_) { Ok(dynamic.bool(True)) })
     False -> Ok(dynamic.bool(False))
+  }
+}
+
+pub fn conditional(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use bool_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_bool,
+  ))
+  case bool_values {
+    [#(True, first), _] -> Ok(first)
+    [#(False, _), #(_, second)] -> Ok(second)
+    [#(True, _), #(_, second), _] -> Ok(second)
+    [#(False, _), _, #(_, third)] -> Ok(third)
+    _ -> Error(error.InvalidArgumentsError)
   }
 }

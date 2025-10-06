@@ -12,4 +12,6 @@ pub type Operator {
 
   Or
   And
+
+  Conditional
 }

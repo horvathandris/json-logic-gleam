@@ -297,5 +297,15 @@
     "rule": { "and": [false, 3] },
     "result": false
   },
+  {
+    "description": "{\"?:\":[true,1,2]}",
+    "rule": { "?:": [true, 1, 2] },
+    "result": 1
+  },
+  {
+    "description": "{\"?:\":[true,1,2]}",
+    "rule": { "?:": [true, 1, 2] },
+    "result": 1
+  },
   "EOF"
 ]

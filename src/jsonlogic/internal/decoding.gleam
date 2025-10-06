@@ -90,6 +90,7 @@ pub fn decode_operator(
     "!" -> Ok(operator.Negate)
     "or" -> Ok(operator.Or)
     "and" -> Ok(operator.And)
+    "?:" -> Ok(operator.Conditional)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
