@@ -13,4 +13,5 @@ pub type Operator {
   Conditional
   In
   Concatenate
+  Modulo
 }

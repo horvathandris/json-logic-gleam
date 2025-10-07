@@ -1,6 +1,8 @@
 import gleam/bool
 import gleam/dynamic
 import gleam/dynamic/decode
+import gleam/float
+import gleam/int
 import gleam/list
 import gleam/result
 import gleam/string
@@ -71,6 +73,7 @@ pub fn evaluate_operation(
     operator.Conditional -> conditional(values)
     operator.In -> in(values)
     operator.Concatenate -> concatenate(values)
+    operator.Modulo -> modulo(values)
   }
 }
 
@@ -126,26 +129,42 @@ fn strict_not_equals(
 
 fn greater_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
-  util.comparison_reduce(evaluated_values, fn(a, b) { a >. b })
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  util.comparison_reduce(float_values, fn(a, b) { a >. b })
 }
 
 fn less_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
-  util.comparison_reduce(evaluated_values, fn(a, b) { a <. b })
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  util.comparison_reduce(float_values, fn(a, b) { a <. b })
 }
 
 fn greater_than_or_equal(
   values: List(rule.Rule),
 ) -> Result(Bool, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
-  util.comparison_reduce(evaluated_values, fn(a, b) { a >=. b })
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  util.comparison_reduce(float_values, fn(a, b) { a >=. b })
 }
 
 fn less_than_or_equal(
   values: List(rule.Rule),
 ) -> Result(Bool, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
-  util.comparison_reduce(evaluated_values, fn(a, b) { a <=. b })
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  util.comparison_reduce(float_values, fn(a, b) { a <=. b })
 }
 
 fn negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
@@ -251,4 +270,20 @@ fn concatenate(
   string.join(string_values, with: "")
   |> dynamic.string
   |> Ok
+}
+
+fn modulo(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  case list.length(float_values) > 1 {
+    True ->
+      util.chain_reduce(float_values, util.modulo)
+      |> result.map(util.float_to_dynamic)
+    False -> Error(error.InvalidArgumentsError)
+  }
 }

@@ -1,0 +1,82 @@
+[
+  "# Collection of Modulo Operator Tests",
+  {
+    "description": "Modulo",
+    "rule": { "%": [4, 2] },
+    "result": 0,
+    "data": null
+  },
+  {
+    "description": "Modulo (2)",
+    "rule": { "%": [2, 2] },
+    "result": 0,
+    "data": null
+  },
+  {
+    "description": "Modulo (3)",
+    "rule": { "%": [3, 2] },
+    "result": 1,
+    "data": null
+  },
+  {
+    "description": "Modulo with a Decimal Operand",
+    "rule": { "%": [1, 0.5] },
+    "result": 0,
+    "data": null,
+    "decimal": true
+  },
+  {
+    "description": "Modulo with Multiple Operands",
+    "rule": { "%": [8, 6, 3] },
+    "result": 2,
+    "data": null
+  },
+  {
+    "description": "Modulo with Multiple Operands (2)",
+    "rule": { "%": [2, 2, 1] },
+    "result": 0,
+    "data": null
+  },
+  {
+    "description": "Modulo with Negative Numbers",
+    "rule": { "%": [-1, 2] },
+    "result": -1,
+    "data": null
+  },
+  {
+    "description": "Modulo with Strings",
+    "rule": { "%": ["8", "2"] },
+    "result": 0,
+    "data": null
+  },
+  {
+    "description": "Modulo with Booleans",
+    "rule": { "%": [false, true] },
+    "result": 0,
+    "data": null
+  },
+  {
+    "description": "Modulo with Multiple Value Types",
+    "rule": { "%": ["8", 3, true] },
+    "result": 0,
+    "data": null
+  },
+  {
+    "description": "Modulo with Multiple Value Types (2)",
+    "rule": { "%": ["1", 1] },
+    "result": 0,
+    "data": null
+  },
+  {
+    "description": "Modulo with a negative dividend",
+    "rule": { "%": [-8, 3] },
+    "result": -2,
+    "data": null
+  },
+  {
+    "description": "Modulo with a negative divisor",
+    "rule": { "%": [8, -3] },
+    "result": 2,
+    "data": null
+  }
+]

@@ -104,6 +104,7 @@ pub fn decode_operator(
     "?:" -> Ok(operator.Conditional)
     "in" -> Ok(operator.In)
     "cat" -> Ok(operator.Concatenate)
+    "%" -> Ok(operator.Modulo)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
@@ -126,6 +127,13 @@ pub fn dynamic_to_float(
     "Int" -> {
       let assert Ok(decoded) = decode.run(input, decode.int)
       Ok(int.to_float(decoded))
+    }
+    "Bool" -> {
+      let assert Ok(decoded) = decode.run(input, decode.bool)
+      case decoded {
+        True -> Ok(1.0)
+        False -> Ok(0.0)
+      }
     }
 
     t -> panic as { "Cannot convert type: " <> t }
