@@ -478,12 +478,15 @@ fn if_(
     evaluated_values,
     decoding.dynamic_to_bool,
   ))
-  case bool_values {
+  do_if(bool_values)
+}
+
+fn do_if(values: List(#(Bool, dynamic.Dynamic))) {
+  case values {
     [] -> Ok(dynamic.nil())
     [#(_, first)] -> Ok(first)
     [#(True, _), #(_, second), ..] -> Ok(second)
-    [#(False, _), _] -> Ok(dynamic.nil())
     [#(False, _), _, #(_, third)] -> Ok(third)
-    _ -> Error(error.InvalidArgumentsError)
+    [_, _, ..rest] -> do_if(rest)
   }
 }

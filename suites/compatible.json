@@ -879,6 +879,111 @@
     "data": null,
     "result": "banana"
   },
+  "If/then/elseif/then cases",
+  {
+    "description": "{\"if\":[true,\"apple\",true,\"banana\"]}",
+    "rule": { "if": [true, "apple", true, "banana"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[true,\"apple\",false,\"banana\"]}",
+    "rule": { "if": [true, "apple", false, "banana"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",true,\"banana\"]}",
+    "rule": { "if": [false, "apple", true, "banana"] },
+    "data": null,
+    "result": "banana"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",false,\"banana\"]}",
+    "rule": { "if": [false, "apple", false, "banana"] },
+    "data": null,
+    "result": null
+  },
+  {
+    "description": "{\"if\":[true,\"apple\",true,\"banana\",\"carrot\"]}",
+    "rule": { "if": [true, "apple", true, "banana", "carrot"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[true,\"apple\",false,\"banana\",\"carrot\"]}",
+    "rule": { "if": [true, "apple", false, "banana", "carrot"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",true,\"banana\",\"carrot\"]}",
+    "rule": { "if": [false, "apple", true, "banana", "carrot"] },
+    "data": null,
+    "result": "banana"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",false,\"banana\",\"carrot\"]}",
+    "rule": { "if": [false, "apple", false, "banana", "carrot"] },
+    "data": null,
+    "result": "carrot"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",false,\"banana\",false,\"carrot\"]}",
+    "rule": { "if": [false, "apple", false, "banana", false, "carrot"] },
+    "data": null,
+    "result": null
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",false,\"banana\",false,\"carrot\",\"date\"]}",
+    "rule": {
+      "if": [false, "apple", false, "banana", false, "carrot", "date"]
+    },
+    "data": null,
+    "result": "date"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",false,\"banana\",true,\"carrot\",\"date\"]}",
+    "rule": { "if": [false, "apple", false, "banana", true, "carrot", "date"] },
+    "data": null,
+    "result": "carrot"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",true,\"banana\",false,\"carrot\",\"date\"]}",
+    "rule": { "if": [false, "apple", true, "banana", false, "carrot", "date"] },
+    "data": null,
+    "result": "banana"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",true,\"banana\",true,\"carrot\",\"date\"]}",
+    "rule": { "if": [false, "apple", true, "banana", true, "carrot", "date"] },
+    "data": null,
+    "result": "banana"
+  },
+  {
+    "description": "{\"if\":[true,\"apple\",false,\"banana\",false,\"carrot\",\"date\"]}",
+    "rule": { "if": [true, "apple", false, "banana", false, "carrot", "date"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[true,\"apple\",false,\"banana\",true,\"carrot\",\"date\"]}",
+    "rule": { "if": [true, "apple", false, "banana", true, "carrot", "date"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[true,\"apple\",true,\"banana\",false,\"carrot\",\"date\"]}",
+    "rule": { "if": [true, "apple", true, "banana", false, "carrot", "date"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[true,\"apple\",true,\"banana\",true,\"carrot\",\"date\"]}",
+    "rule": { "if": [true, "apple", true, "banana", true, "carrot", "date"] },
+    "data": null,
+    "result": "apple"
+  },
   {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {
