@@ -25,7 +25,8 @@ pub fn decode_rule(
 ) -> Result(rule.Rule, error.EvaluationError) {
   case dynamic.classify(rule) {
     "Bool" | "String" | "Int" | "Float" | "Nil" | "Array" | "List" ->
-      Ok(rule.Literal(decode_literal(rule)))
+      decode_literal(rule)
+      |> result.map(rule.Literal)
     "Dict" -> {
       let decoding_result =
         decode.run(rule, decode.dict(decode.string, decode.dynamic))
@@ -59,31 +60,34 @@ pub fn decode_rule(
   }
 }
 
-fn decode_literal(literal: dynamic.Dynamic) -> rule.JsonLiteral {
-  let assert Ok(typed_literal) = case dynamic.classify(literal) {
-    "Bool" ->
-      decode.run(literal, decode.bool)
-      |> result.map(rule.BoolLiteral)
-    "String" ->
-      decode.run(literal, decode.string)
-      |> result.map(rule.StringLiteral)
-    "Int" ->
-      decode.run(literal, decode.int)
-      |> result.map(rule.IntLiteral)
-    "Float" ->
-      decode.run(literal, decode.float)
-      |> result.map(rule.FloatLiteral)
+fn decode_literal(
+  literal: dynamic.Dynamic,
+) -> Result(rule.JsonLiteral, error.EvaluationError) {
+  case dynamic.classify(literal) {
+    "Bool" -> {
+      let assert Ok(decoded) = decode.run(literal, decode.bool)
+      Ok(rule.BoolLiteral(decoded))
+    }
+    "String" -> {
+      let assert Ok(decoded) = decode.run(literal, decode.string)
+      Ok(rule.StringLiteral(decoded))
+    }
+    "Int" -> {
+      let assert Ok(decoded) = decode.run(literal, decode.int)
+      Ok(rule.IntLiteral(decoded))
+    }
+    "Float" -> {
+      let assert Ok(decoded) = decode.run(literal, decode.float)
+      Ok(rule.FloatLiteral(decoded))
+    }
     "Nil" -> Ok(rule.NilLiteral)
     "Array" | "List" -> {
-      decode.run(literal, decode.list(decode.dynamic))
-      |> result.map(list.map(_, decode_literal))
-      |> result.map(list.map(_, rule.Literal))
+      let assert Ok(decoded) = decode.run(literal, decode.list(decode.dynamic))
+      list.try_map(decoded, decode_rule)
       |> result.map(rule.ArrayLiteral)
     }
-    t -> panic as { "Unsupported literal type" <> t }
+    t -> panic as { "Unsupported literal type: " <> t }
   }
-
-  typed_literal
 }
 
 pub fn decode_operator(
