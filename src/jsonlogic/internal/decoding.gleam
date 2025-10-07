@@ -1,3 +1,4 @@
+import gleam/bool
 import gleam/dict
 import gleam/dynamic
 import gleam/dynamic/decode
@@ -6,6 +7,7 @@ import gleam/int
 import gleam/json
 import gleam/list
 import gleam/result
+import gleam/string
 import jsonlogic/internal/error
 import jsonlogic/internal/operator
 import jsonlogic/internal/rule
@@ -101,6 +103,7 @@ pub fn decode_operator(
     "and" -> Ok(operator.And)
     "?:" -> Ok(operator.Conditional)
     "in" -> Ok(operator.In)
+    "cat" -> Ok(operator.Concatenate)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
@@ -144,4 +147,18 @@ pub fn dynamic_to_bool(
 
     t -> panic as { "Cannot convert type: " <> t }
   }
+}
+
+pub fn dynamic_to_string(
+  input: dynamic.Dynamic,
+) -> Result(String, error.EvaluationError) {
+  decode.run(
+    input,
+    decode.one_of(decode.string, or: [
+      decode.float |> decode.map(float.to_string),
+      decode.int |> decode.map(int.to_string),
+      decode.bool |> decode.map(bool.to_string) |> decode.map(string.lowercase),
+    ]),
+  )
+  |> result.map_error(error.DecodeError)
 }

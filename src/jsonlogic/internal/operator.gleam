@@ -7,13 +7,10 @@ pub type Operator {
   LessThan
   GreaterThanOrEqual
   LessThanOrEqual
-
   Negate
-
   Or
   And
-
   Conditional
-
   In
+  Concatenate
 }

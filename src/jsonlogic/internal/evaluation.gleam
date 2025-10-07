@@ -70,6 +70,7 @@ pub fn evaluate_operation(
     operator.And -> and(values)
     operator.Conditional -> conditional(values)
     operator.In -> in(values)
+    operator.Concatenate -> concatenate(values)
   }
 }
 
@@ -195,7 +196,7 @@ fn and(
   }
 }
 
-pub fn conditional(
+fn conditional(
   values: List(rule.Rule),
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
@@ -212,9 +213,7 @@ pub fn conditional(
   }
 }
 
-pub fn in(
-  values: List(rule.Rule),
-) -> Result(dynamic.Dynamic, error.EvaluationError) {
+fn in(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
   case evaluated_values {
     [] | [_] -> Ok(dynamic.bool(False))
@@ -239,4 +238,17 @@ pub fn in(
       }
     _ -> Error(error.InvalidArgumentsError)
   }
+}
+
+fn concatenate(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use string_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_string,
+  ))
+  string.join(string_values, with: "")
+  |> dynamic.string
+  |> Ok
 }

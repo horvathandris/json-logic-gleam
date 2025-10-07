@@ -331,5 +331,35 @@
     "rule": { "in": ["i", "team"] },
     "result": false
   },
+  {
+    "description": "{\"cat\":\"ice\"}",
+    "rule": { "cat": "ice" },
+    "result": "ice"
+  },
+  {
+    "description": "{\"cat\":[\"ice\"]}",
+    "rule": { "cat": ["ice"] },
+    "result": "ice"
+  },
+  {
+    "description": "{\"cat\":[\"ice\",\"cream\"]}",
+    "rule": { "cat": ["ice", "cream"] },
+    "result": "icecream"
+  },
+  {
+    "description": "{\"cat\":[1,2]}",
+    "rule": { "cat": [1, 2] },
+    "result": "12"
+  },
+  {
+    "description": "{\"cat\":[\"Robocop\",2]}",
+    "rule": { "cat": ["Robocop", 2] },
+    "result": "Robocop2"
+  },
+  {
+    "description": "{\"cat\":[\"we all scream for \",\"ice\",\"cream\"]}",
+    "rule": { "cat": ["we all scream for ", "ice", "cream"] },
+    "result": "we all scream for icecream"
+  },
   "EOF"
 ]
