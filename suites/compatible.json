@@ -540,6 +540,82 @@
     "data": null,
     "result": "son"
   },
+  "Merge arrays",
+  {
+    "description": "{\"merge\":[]}",
+    "rule": { "merge": [] },
+    "data": null,
+    "result": []
+  },
+  {
+    "description": "{\"merge\":[[1]]}",
+    "rule": {
+      "merge": [[1]]
+    },
+    "data": null,
+    "result": [1]
+  },
+  {
+    "description": "{\"merge\":[[1],[]]}",
+    "rule": {
+      "merge": [[1], []]
+    },
+    "data": null,
+    "result": [1]
+  },
+  {
+    "description": "{\"merge\":[[1],[2]]}",
+    "rule": {
+      "merge": [[1], [2]]
+    },
+    "data": null,
+    "result": [1, 2]
+  },
+  {
+    "description": "{\"merge\":[[1],[2],[3]]}",
+    "rule": {
+      "merge": [[1], [2], [3]]
+    },
+    "data": null,
+    "result": [1, 2, 3]
+  },
+  {
+    "description": "{\"merge\":[[1,2],[3]]}",
+    "rule": {
+      "merge": [[1, 2], [3]]
+    },
+    "data": null,
+    "result": [1, 2, 3]
+  },
+  {
+    "description": "{\"merge\":[[1],[2,3]]}",
+    "rule": {
+      "merge": [[1], [2, 3]]
+    },
+    "data": null,
+    "result": [1, 2, 3]
+  },
+  "Given non-array arguments, merge converts them to arrays",
+  {
+    "description": "{\"merge\":1}",
+    "rule": { "merge": 1 },
+    "data": null,
+    "result": [1]
+  },
+  {
+    "description": "{\"merge\":[1,2]}",
+    "rule": { "merge": [1, 2] },
+    "data": null,
+    "result": [1, 2]
+  },
+  {
+    "description": "{\"merge\":[1,[2]]}",
+    "rule": {
+      "merge": [1, [2]]
+    },
+    "data": null,
+    "result": [1, 2]
+  },
   {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {

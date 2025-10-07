@@ -116,6 +116,7 @@ pub fn decode_operator(
     "-" -> Ok(operator.Minus)
     "/" -> Ok(operator.Divide)
     "substr" -> Ok(operator.Substring)
+    "merge" -> Ok(operator.Merge)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
@@ -216,6 +217,18 @@ pub fn dynamic_to_string(
       decode.float |> decode.map(float.to_string),
       decode.int |> decode.map(int.to_string),
       decode.bool |> decode.map(bool.to_string) |> decode.map(string.lowercase),
+    ]),
+  )
+  |> result.map_error(error.DecodeError)
+}
+
+pub fn dynamic_to_array(
+  input: dynamic.Dynamic,
+) -> Result(List(dynamic.Dynamic), error.EvaluationError) {
+  decode.run(
+    input,
+    decode.one_of(decode.list(decode.dynamic), or: [
+      decode.dynamic |> decode.map(list.wrap),
     ]),
   )
   |> result.map_error(error.DecodeError)

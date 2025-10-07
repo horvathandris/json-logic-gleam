@@ -21,4 +21,5 @@ pub type Operator {
   Minus
   Divide
   Substring
+  Merge
 }

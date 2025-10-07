@@ -80,6 +80,7 @@ pub fn evaluate_operation(
     operator.Minus -> minus(values)
     operator.Divide -> divide(values)
     operator.Substring -> substring(values)
+    operator.Merge -> merge(values)
   }
 }
 
@@ -436,5 +437,22 @@ fn substring(
     }
 
     _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn merge(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use array_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_array,
+  ))
+  case array_values {
+    [] -> Ok(dynamic.array([]))
+    _ ->
+      list.flatten(array_values)
+      |> dynamic.array
+      |> Ok
   }
 }
