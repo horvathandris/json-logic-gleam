@@ -77,7 +77,8 @@ pub fn evaluate_operation(
     operator.Min -> min(values)
     operator.Plus -> plus(values)
     operator.Multiply -> multiply(values)
-    operator.Minus -> minus(values) |> echo
+    operator.Minus -> minus(values)
+    operator.Divide -> divide(values)
   }
 }
 
@@ -376,6 +377,22 @@ fn minus(
       |> Ok
     [_, ..] ->
       util.chain_reduce(float_values, float.subtract)
+      |> result.map(util.float_to_dynamic)
+  }
+}
+
+fn divide(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  case float_values {
+    [] -> Ok(dynamic.int(1))
+    [_, ..] ->
+      util.chain_reduce_result(float_values, util.divide)
       |> result.map(util.float_to_dynamic)
   }
 }

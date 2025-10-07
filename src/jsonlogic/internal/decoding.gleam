@@ -114,6 +114,7 @@ pub fn decode_operator(
     "+" -> Ok(operator.Plus)
     "*" -> Ok(operator.Multiply)
     "-" -> Ok(operator.Minus)
+    "/" -> Ok(operator.Divide)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }

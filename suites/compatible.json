@@ -477,6 +477,21 @@
     "result": 0
   },
   {
+    "description": "{\"/\":[4,2]}",
+    "rule": { "/": [4, 2] },
+    "result": 2
+  },
+  {
+    "description": "{\"/\":[2,4]}",
+    "rule": { "/": [2, 4] },
+    "result": 0.5
+  },
+  {
+    "description": "{\"/\":[\"1\",1]}",
+    "rule": { "/": ["1", 1] },
+    "result": 1
+  },
+  {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {
       "and": [{ ">": [3, 1] }, true]

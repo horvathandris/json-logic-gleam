@@ -61,6 +61,11 @@ pub fn modulo(a: Float, b: Float) -> Result(Float, error.EvaluationError) {
   |> result.try_recover(fn(_) { Error(error.NaNError) })
 }
 
+pub fn divide(a: Float, b: Float) -> Result(Float, error.EvaluationError) {
+  float.divide(a, b)
+  |> result.try_recover(fn(_) { Error(error.NaNError) })
+}
+
 pub fn float_to_dynamic(value: Float) -> dynamic.Dynamic {
   let truncated = float.truncate(value)
   let is_zero = is_zero(value)

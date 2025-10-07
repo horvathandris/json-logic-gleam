@@ -19,4 +19,5 @@ pub type Operator {
   Plus
   Multiply
   Minus
+  Divide
 }
