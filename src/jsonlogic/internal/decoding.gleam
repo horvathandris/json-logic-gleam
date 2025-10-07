@@ -117,6 +117,7 @@ pub fn decode_operator(
     "/" -> Ok(operator.Divide)
     "substr" -> Ok(operator.Substring)
     "merge" -> Ok(operator.Merge)
+    "if" -> Ok(operator.If)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
@@ -202,6 +203,10 @@ pub fn dynamic_to_bool(
     "Int" -> {
       let assert Ok(decoded) = decode.run(input, decode.int)
       Ok(#(decoded != 0, input))
+    }
+    "String" -> {
+      let assert Ok(decoded) = decode.run(input, decode.string)
+      Ok(#(decoded == "", input))
     }
 
     t -> panic as { "Cannot convert type: " <> t }

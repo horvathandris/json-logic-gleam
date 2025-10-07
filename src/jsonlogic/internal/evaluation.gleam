@@ -81,6 +81,7 @@ pub fn evaluate_operation(
     operator.Divide -> divide(values)
     operator.Substring -> substring(values)
     operator.Merge -> merge(values)
+    operator.If -> if_(values)
   }
 }
 
@@ -454,5 +455,23 @@ fn merge(
       list.flatten(array_values)
       |> dynamic.array
       |> Ok
+  }
+}
+
+fn if_(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use bool_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_bool,
+  ))
+  case bool_values {
+    [] -> Ok(dynamic.nil())
+    [#(_, first)] -> Ok(first)
+    [#(True, _), #(_, second), ..] -> Ok(second)
+    [#(False, _), _] -> Ok(dynamic.nil())
+    [#(False, _), _, #(_, third)] -> Ok(third)
+    _ -> Error(error.InvalidArgumentsError)
   }
 }

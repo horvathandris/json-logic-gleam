@@ -616,6 +616,56 @@
     "data": null,
     "result": [1, 2]
   },
+  "Too few args",
+  {
+    "description": "{\"if\":[]}",
+    "rule": { "if": [] },
+    "data": null,
+    "result": null
+  },
+  {
+    "description": "{\"if\":[true]}",
+    "rule": { "if": [true] },
+    "data": null,
+    "result": true
+  },
+  {
+    "description": "{\"if\":[false]}",
+    "rule": { "if": [false] },
+    "data": null,
+    "result": false
+  },
+  {
+    "description": "{\"if\":[\"apple\"]}",
+    "rule": { "if": ["apple"] },
+    "data": null,
+    "result": "apple"
+  },
+  "Simple if/then/else cases",
+  {
+    "description": "{\"if\":[true,\"apple\"]}",
+    "rule": { "if": [true, "apple"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\"]}",
+    "rule": { "if": [false, "apple"] },
+    "data": null,
+    "result": null
+  },
+  {
+    "description": "{\"if\":[true,\"apple\",\"banana\"]}",
+    "rule": { "if": [true, "apple", "banana"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[false,\"apple\",\"banana\"]}",
+    "rule": { "if": [false, "apple", "banana"] },
+    "data": null,
+    "result": "banana"
+  },
   {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {

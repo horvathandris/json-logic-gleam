@@ -22,4 +22,5 @@ pub type Operator {
   Divide
   Substring
   Merge
+  If
 }
