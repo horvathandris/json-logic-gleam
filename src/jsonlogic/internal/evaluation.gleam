@@ -13,15 +13,18 @@ import jsonlogic/internal/util
 
 pub fn evaluate(
   rule: rule.Rule,
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   case rule {
-    rule.Literal(literal) -> evaluate_literal(literal)
-    rule.Operation(operator, values) -> evaluate_operation(operator, values)
+    rule.Literal(literal) -> evaluate_literal(literal, data)
+    rule.Operation(operator, values) ->
+      evaluate_operation(operator, values, data)
   }
 }
 
 pub fn evaluate_literal(
   literal: rule.JsonLiteral,
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   case literal {
     rule.BoolLiteral(value) -> Ok(dynamic.bool(value))
@@ -29,7 +32,7 @@ pub fn evaluate_literal(
     rule.IntLiteral(value) -> Ok(dynamic.int(value))
     rule.FloatLiteral(value) -> Ok(dynamic.float(value))
     rule.ArrayLiteral(values) ->
-      list.try_map(values, evaluate)
+      list.try_map(values, evaluate(_, data))
       |> result.map(dynamic.list)
     rule.NilLiteral -> Ok(dynamic.nil())
   }
@@ -38,61 +41,62 @@ pub fn evaluate_literal(
 pub fn evaluate_operation(
   operator: operator.Operator,
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   case operator {
     operator.AbstractEquals ->
-      abstract_equals(values)
+      abstract_equals(values, data)
       |> result.map(dynamic.bool)
     operator.AbstractNotEquals ->
-      abstract_not_equals(values)
+      abstract_not_equals(values, data)
       |> result.map(dynamic.bool)
     operator.StrictEquals ->
-      strict_equals(values)
+      strict_equals(values, data)
       |> result.map(dynamic.bool)
     operator.StrictNotEquals ->
-      strict_not_equals(values)
+      strict_not_equals(values, data)
       |> result.map(dynamic.bool)
     operator.GreaterThan ->
-      greater_than(values)
+      greater_than(values, data)
       |> result.map(dynamic.bool)
     operator.LessThan ->
-      less_than(values)
+      less_than(values, data)
       |> result.map(dynamic.bool)
     operator.GreaterThanOrEqual ->
-      greater_than_or_equal(values)
+      greater_than_or_equal(values, data)
       |> result.map(dynamic.bool)
     operator.LessThanOrEqual ->
-      less_than_or_equal(values)
+      less_than_or_equal(values, data)
       |> result.map(dynamic.bool)
     operator.Negate ->
-      negate(values)
+      negate(values, data)
       |> result.map(dynamic.bool)
     operator.DoubleNegate ->
-      double_negate(values)
+      double_negate(values, data)
       |> result.map(dynamic.bool)
-    operator.Or -> or(values)
-    operator.And -> and(values)
-    operator.Conditional -> conditional(values)
-    operator.In -> in(values)
-    operator.Concatenate -> concatenate(values)
-    operator.Modulo -> modulo(values)
-    operator.Max -> max(values)
-    operator.Min -> min(values)
-    operator.Plus -> plus(values)
-    operator.Multiply -> multiply(values)
-    operator.Minus -> minus(values)
-    operator.Divide -> divide(values)
-    operator.Substring -> substring(values)
-    operator.Merge -> merge(values)
-    operator.If -> if_(values)
+    operator.Or -> or(values, data)
+    operator.And -> and(values, data)
+    operator.Conditional -> conditional(values, data)
+    operator.In -> in(values, data)
+    operator.Concatenate -> concatenate(values, data)
+    operator.Modulo -> modulo(values, data)
+    operator.Max -> max(values, data)
+    operator.Min -> min(values, data)
+    operator.Plus -> plus(values, data)
+    operator.Multiply -> multiply(values, data)
+    operator.Minus -> minus(values, data)
+    operator.Divide -> divide(values, data)
+    operator.Substring -> substring(values, data)
+    operator.Merge -> merge(values, data)
+    operator.If -> if_(values, data)
   }
 }
 
-fn abstract_equals(values: List(rule.Rule)) {
+fn abstract_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
   case values {
     [first, second] -> {
-      use first <- result.try(evaluate(first))
-      use second <- result.try(evaluate(second))
+      use first <- result.try(evaluate(first, data))
+      use second <- result.try(evaluate(second, data))
       use first <- result.try(decoding.dynamic_to_float(first))
       use second <- result.try(decoding.dynamic_to_float(second))
       Ok(first == second)
@@ -101,11 +105,11 @@ fn abstract_equals(values: List(rule.Rule)) {
   }
 }
 
-fn abstract_not_equals(values: List(rule.Rule)) {
+fn abstract_not_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
   case values {
     [first, second] -> {
-      use first <- result.try(evaluate(first))
-      use second <- result.try(evaluate(second))
+      use first <- result.try(evaluate(first, data))
+      use second <- result.try(evaluate(second, data))
       use first <- result.try(decoding.dynamic_to_float(first))
       use second <- result.try(decoding.dynamic_to_float(second))
       Ok(first != second)
@@ -114,11 +118,11 @@ fn abstract_not_equals(values: List(rule.Rule)) {
   }
 }
 
-fn strict_equals(values: List(rule.Rule)) {
+fn strict_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
   case values {
     [first, second] -> {
-      use first <- result.try(evaluate(first))
-      use second <- result.try(evaluate(second))
+      use first <- result.try(evaluate(first, data))
+      use second <- result.try(evaluate(second, data))
       Ok(first == second)
     }
     _ -> Error(error.InvalidArgumentsError)
@@ -127,19 +131,23 @@ fn strict_equals(values: List(rule.Rule)) {
 
 fn strict_not_equals(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(Bool, error.EvaluationError) {
   case values {
     [first, second] -> {
-      use first <- result.try(evaluate(first))
-      use second <- result.try(evaluate(second))
+      use first <- result.try(evaluate(first, data))
+      use second <- result.try(evaluate(second, data))
       Ok(first != second)
     }
     _ -> Error(error.InvalidArgumentsError)
   }
 }
 
-fn greater_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+fn greater_than(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(Bool, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -147,8 +155,11 @@ fn greater_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) 
   util.comparison_reduce(float_values, fn(a, b) { a >. b })
 }
 
-fn less_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+fn less_than(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(Bool, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -158,8 +169,9 @@ fn less_than(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
 
 fn greater_than_or_equal(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(Bool, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -169,8 +181,9 @@ fn greater_than_or_equal(
 
 fn less_than_or_equal(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(Bool, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -178,10 +191,13 @@ fn less_than_or_equal(
   util.comparison_reduce(float_values, fn(a, b) { a <=. b })
 }
 
-fn negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
+fn negate(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(Bool, error.EvaluationError) {
   case values {
     [value] -> {
-      use evaluated_value <- result.try(evaluate(value))
+      use evaluated_value <- result.try(evaluate(value, data))
       use #(bool_value, _) <- result.map(decoding.dynamic_to_bool(
         evaluated_value,
       ))
@@ -191,10 +207,13 @@ fn negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
   }
 }
 
-fn double_negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
+fn double_negate(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(Bool, error.EvaluationError) {
   case values {
     [value] -> {
-      use evaluated_value <- result.try(evaluate(value))
+      use evaluated_value <- result.try(evaluate(value, data))
       decoding.dynamic_to_bool(evaluated_value)
       |> result.map(fn(b) { b.0 })
     }
@@ -202,8 +221,11 @@ fn double_negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError)
   }
 }
 
-fn or(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+fn or(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use bool_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_bool,
@@ -220,8 +242,9 @@ fn or(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError)
 
 fn and(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use bool_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_bool,
@@ -237,8 +260,9 @@ fn and(
 
 fn conditional(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use bool_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_bool,
@@ -252,8 +276,11 @@ fn conditional(
   }
 }
 
-fn in(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+fn in(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   case evaluated_values {
     [] | [_] -> Ok(dynamic.bool(False))
     [first, second] ->
@@ -281,8 +308,9 @@ fn in(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError)
 
 fn concatenate(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use string_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_string,
@@ -294,8 +322,9 @@ fn concatenate(
 
 fn modulo(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -310,8 +339,9 @@ fn modulo(
 
 fn max(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -327,8 +357,9 @@ fn max(
 
 fn min(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -344,8 +375,9 @@ fn min(
 
 fn plus(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -361,8 +393,9 @@ fn plus(
 
 fn multiply(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -378,8 +411,9 @@ fn multiply(
 
 fn minus(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -398,8 +432,9 @@ fn minus(
 
 fn divide(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use float_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_float,
@@ -414,8 +449,9 @@ fn divide(
 
 fn substring(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   case evaluated_values {
     [first] ->
       decoding.dynamic_to_string(first)
@@ -455,8 +491,9 @@ fn substring(
 
 fn merge(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use array_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_array,
@@ -472,8 +509,9 @@ fn merge(
 
 fn if_(
   values: List(rule.Rule),
+  data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   use bool_values <- result.try(list.try_map(
     evaluated_values,
     decoding.dynamic_to_bool,

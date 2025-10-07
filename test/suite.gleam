@@ -12,7 +12,7 @@ pub type TestCase {
   TestCase(
     description: String,
     logic: Dynamic,
-    data: Option(Dynamic),
+    data: Dynamic,
     result: ExpectedResult,
     error: Option(Dynamic),
   )
@@ -34,7 +34,7 @@ pub fn run_test_cases(suite: TestSuite) -> List(#(String, TestCaseResult)) {
 
 pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
   // echo test_case
-  let actual = jsonlogic.apply_dynamic(test_case.logic)
+  let actual = jsonlogic.apply_dynamic(test_case.logic, test_case.data)
   // echo actual
 
   let test_case_result = case test_case.result {
@@ -59,11 +59,7 @@ fn normalize_dynamic(value: Dynamic) -> Dynamic {
 fn test_case_decoder() {
   use description <- decode.field("description", decode.string)
   use logic <- decode.field("rule", decode.dynamic)
-  use data <- decode.optional_field(
-    "data",
-    option.None,
-    decode.optional(decode.dynamic),
-  )
+  use data <- decode.optional_field("data", dynamic.nil(), decode.dynamic)
   use result <- decode.optional_field(
     "result",
     NoResult,
