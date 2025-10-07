@@ -666,6 +666,104 @@
     "data": null,
     "result": "banana"
   },
+  "Empty arrays are falsey",
+  {
+    "description": "{\"if\":[[],\"apple\",\"banana\"]}",
+    "rule": { "if": [[], "apple", "banana"] },
+    "data": null,
+    "result": "banana"
+  },
+  {
+    "description": "{\"if\":[[1],\"apple\",\"banana\"]}",
+    "rule": {
+      "if": [[1], "apple", "banana"]
+    },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[[1,2,3,4],\"apple\",\"banana\"]}",
+    "rule": {
+      "if": [[1, 2, 3, 4], "apple", "banana"]
+    },
+    "data": null,
+    "result": "apple"
+  },
+  "Empty strings are falsey, all other strings are truthy",
+  {
+    "description": "{\"if\":[\"\",\"apple\",\"banana\"]}",
+    "rule": { "if": ["", "apple", "banana"] },
+    "data": null,
+    "result": "banana"
+  },
+  {
+    "description": "{\"if\":[\"zucchini\",\"apple\",\"banana\"]}",
+    "rule": { "if": ["zucchini", "apple", "banana"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[\"0\",\"apple\",\"banana\"]}",
+    "rule": { "if": ["0", "apple", "banana"] },
+    "data": null,
+    "result": "apple"
+  },
+  "You can cast a string to numeric with a unary + ",
+  {
+    "description": "{\"===\":[0,\"0\"]}",
+    "rule": { "===": [0, "0"] },
+    "data": null,
+    "result": false
+  },
+  {
+    "description": "{\"===\":[0,{\"+\":\"0\"}]}",
+    "rule": {
+      "===": [0, { "+": "0" }]
+    },
+    "data": null,
+    "result": true
+  },
+  {
+    "description": "{\"if\":[{\"+\":\"0\"},\"apple\",\"banana\"]}",
+    "rule": {
+      "if": [{ "+": "0" }, "apple", "banana"]
+    },
+    "data": null,
+    "result": "banana"
+  },
+  {
+    "description": "{\"if\":[{\"+\":\"1\"},\"apple\",\"banana\"]}",
+    "rule": {
+      "if": [{ "+": "1" }, "apple", "banana"]
+    },
+    "data": null,
+    "result": "apple"
+  },
+  "Zero is falsy, all other numbers are truthy",
+  {
+    "description": "{\"if\":[0,\"apple\",\"banana\"]}",
+    "rule": { "if": [0, "apple", "banana"] },
+    "data": null,
+    "result": "banana"
+  },
+  {
+    "description": "{\"if\":[1,\"apple\",\"banana\"]}",
+    "rule": { "if": [1, "apple", "banana"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[3.1416,\"apple\",\"banana\"]}",
+    "rule": { "if": [3.1416, "apple", "banana"] },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[-1,\"apple\",\"banana\"]}",
+    "rule": { "if": [-1, "apple", "banana"] },
+    "data": null,
+    "result": "apple"
+  },
   {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {
