@@ -23,4 +23,5 @@ pub type Operator {
   Substring
   Merge
   If
+  DoubleNegate
 }

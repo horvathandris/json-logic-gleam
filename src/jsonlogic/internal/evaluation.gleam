@@ -67,6 +67,9 @@ pub fn evaluate_operation(
     operator.Negate ->
       negate(values)
       |> result.map(dynamic.bool)
+    operator.DoubleNegate ->
+      double_negate(values)
+      |> result.map(dynamic.bool)
     operator.Or -> or(values)
     operator.And -> and(values)
     operator.Conditional -> conditional(values)
@@ -188,6 +191,17 @@ fn negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
   }
 }
 
+fn double_negate(values: List(rule.Rule)) -> Result(Bool, error.EvaluationError) {
+  case values {
+    [value] -> {
+      use evaluated_value <- result.try(evaluate(value))
+      decoding.dynamic_to_bool(evaluated_value)
+      |> result.map(fn(b) { b.0 })
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
 fn or(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
   use bool_values <- result.try(list.try_map(
@@ -212,15 +226,13 @@ fn and(
     evaluated_values,
     decoding.dynamic_to_bool,
   ))
-  case list.all(bool_values, fn(value) { value.0 }) {
-    True ->
-      list.last(bool_values)
-      |> result.map(fn(value) { value.1 })
-      // empty list case
-      |> result.unwrap(dynamic.bool(True))
-      |> Ok
-    False -> Ok(dynamic.bool(False))
-  }
+  list.fold_until(bool_values, dynamic.bool(True), fn(_, value) {
+    case value.0 {
+      True -> list.Continue(value.1)
+      False -> list.Stop(value.1)
+    }
+  })
+  |> Ok
 }
 
 fn conditional(
@@ -253,7 +265,7 @@ fn in(values: List(rule.Rule)) -> Result(dynamic.Dynamic, error.EvaluationError)
           |> dynamic.bool
           |> Ok
         }
-        "String", "Array" | "String", "List" -> {
+        "String", "List" -> {
           let assert Ok(first) = decode.run(first, decode.string)
           // todo: make this safer
           let assert Ok(second) = decode.run(second, decode.list(decode.string))
@@ -450,10 +462,10 @@ fn merge(
     decoding.dynamic_to_array,
   ))
   case array_values {
-    [] -> Ok(dynamic.array([]))
+    [] -> Ok(dynamic.list([]))
     _ ->
       list.flatten(array_values)
-      |> dynamic.array
+      |> dynamic.list
       |> Ok
   }
 }

@@ -24,7 +24,7 @@ pub fn decode_rule(
   rule: dynamic.Dynamic,
 ) -> Result(rule.Rule, error.EvaluationError) {
   case dynamic.classify(rule) {
-    "Bool" | "String" | "Int" | "Float" | "Nil" | "Array" | "List" ->
+    "Bool" | "String" | "Int" | "Float" | "Nil" | "List" ->
       decode_literal(rule)
       |> result.map(rule.Literal)
     "Dict" -> {
@@ -81,7 +81,7 @@ fn decode_literal(
       Ok(rule.FloatLiteral(decoded))
     }
     "Nil" -> Ok(rule.NilLiteral)
-    "Array" | "List" -> {
+    "List" -> {
       let assert Ok(decoded) = decode.run(literal, decode.list(decode.dynamic))
       list.try_map(decoded, decode_rule)
       |> result.map(rule.ArrayLiteral)
@@ -103,6 +103,7 @@ pub fn decode_operator(
     ">=" -> Ok(operator.GreaterThanOrEqual)
     "<=" -> Ok(operator.LessThanOrEqual)
     "!" -> Ok(operator.Negate)
+    "!!" -> Ok(operator.DoubleNegate)
     "or" -> Ok(operator.Or)
     "and" -> Ok(operator.And)
     "?:" -> Ok(operator.Conditional)

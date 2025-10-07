@@ -764,6 +764,121 @@
     "data": null,
     "result": "apple"
   },
+  "Truthy and falsy definitions matter in Boolean operations",
+  {
+    "description": "{\"!\":[[]]}",
+    "rule": { "!": [[]] },
+    "result": true
+  },
+  {
+    "description": "{\"!!\":[[]]}",
+    "rule": { "!!": [[]] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[[],true]}",
+    "rule": { "and": [[], true] },
+    "result": []
+  },
+  {
+    "description": "{\"or\":[[],true]}",
+    "rule": { "or": [[], true] },
+    "result": true
+  },
+  {
+    "description": "{\"!\":[0]}",
+    "rule": { "!": [0] },
+    "result": true
+  },
+  {
+    "description": "{\"!!\":[0]}",
+    "rule": { "!!": [0] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[0,true]}",
+    "rule": { "and": [0, true] },
+    "result": 0
+  },
+  {
+    "description": "{\"or\":[0,true]}",
+    "rule": { "or": [0, true] },
+    "result": true
+  },
+  {
+    "description": "{\"!\":[\"\"]}",
+    "rule": { "!": [""] },
+    "result": true
+  },
+  {
+    "description": "{\"!!\":[\"\"]}",
+    "rule": { "!!": [""] },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[\"\",true]}",
+    "rule": { "and": ["", true] },
+    "result": ""
+  },
+  {
+    "description": "{\"or\":[\"\",true]}",
+    "rule": { "or": ["", true] },
+    "result": true
+  },
+  {
+    "description": "{\"!\":[\"0\"]}",
+    "rule": { "!": ["0"] },
+    "result": false
+  },
+  {
+    "description": "{\"!!\":[\"0\"]}",
+    "rule": { "!!": ["0"] },
+    "result": true
+  },
+  {
+    "description": "{\"and\":[\"0\",true]}",
+    "rule": { "and": ["0", true] },
+    "result": true
+  },
+  {
+    "description": "{\"or\":[\"0\",true]}",
+    "rule": { "or": ["0", true] },
+    "result": "0"
+  },
+  "If the conditional is logic, it gets evaluated",
+  {
+    "description": "{\"if\":[{\">\":[2,1]},\"apple\",\"banana\"]}",
+    "rule": {
+      "if": [{ ">": [2, 1] }, "apple", "banana"]
+    },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[{\">\":[1,2]},\"apple\",\"banana\"]}",
+    "rule": {
+      "if": [{ ">": [1, 2] }, "apple", "banana"]
+    },
+    "data": null,
+    "result": "banana"
+  },
+  "If the consequents are logic, they get evaluated",
+  {
+    "description": "{\"if\":[true,{\"cat\":[\"ap\",\"ple\"]},{\"cat\":[\"ba\",\"na\",\"na\"]}]}",
+    "rule": {
+      "if": [true, { "cat": ["ap", "ple"] }, { "cat": ["ba", "na", "na"] }]
+    },
+    "data": null,
+    "result": "apple"
+  },
+  {
+    "description": "{\"if\":[false,{\"cat\":[\"ap\",\"ple\"]},{\"cat\":[\"ba\",\"na\",\"na\"]}]}",
+    "rule": {
+      "if": [false, { "cat": ["ap", "ple"] }, { "cat": ["ba", "na", "na"] }]
+    },
+    "data": null,
+    "result": "banana"
+  },
   {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {

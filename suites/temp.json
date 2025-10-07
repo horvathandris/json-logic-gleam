@@ -1,0 +1,7 @@
+[
+  {
+    "description": "{\"and\":[[],true]}",
+    "rule": { "and": [[], true] },
+    "result": []
+  }
+]

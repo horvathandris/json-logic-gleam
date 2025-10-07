@@ -52,10 +52,6 @@ pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
 fn normalize_dynamic(value: Dynamic) -> Dynamic {
   case dynamic.classify(value) {
     "Nil" -> dynamic.nil()
-    "List" -> {
-      let assert Ok(list) = decode.run(value, decode.list(decode.dynamic))
-      dynamic.array(list)
-    }
     _ -> value
   }
 }
