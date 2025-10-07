@@ -75,6 +75,7 @@ pub fn evaluate_operation(
     operator.Modulo -> modulo(values)
     operator.Max -> max(values)
     operator.Min -> min(values)
+    operator.Sum -> sum(values)
   }
 }
 
@@ -320,5 +321,22 @@ fn min(
       util.chain_reduce(float_values, float.min)
       |> result.map(util.float_to_dynamic)
     _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn sum(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  case float_values {
+    [] -> Ok(dynamic.int(0))
+    [_, ..] ->
+      float.sum(float_values)
+      |> util.float_to_dynamic
+      |> Ok
   }
 }

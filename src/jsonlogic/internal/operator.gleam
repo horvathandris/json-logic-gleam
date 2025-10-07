@@ -16,4 +16,5 @@ pub type Operator {
   Modulo
   Max
   Min
+  Sum
 }

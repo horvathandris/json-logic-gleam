@@ -111,6 +111,7 @@ pub fn decode_operator(
     "%" -> Ok(operator.Modulo)
     "max" -> Ok(operator.Max)
     "min" -> Ok(operator.Min)
+    "+" -> Ok(operator.Sum)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
@@ -121,10 +122,14 @@ pub fn dynamic_to_float(
   case dynamic.classify(input) {
     "String" -> {
       let assert Ok(decoded) = decode.run(input, decode.string)
-      int.parse(decoded)
-      |> result.map(int.to_float)
-      |> result.try_recover(fn(_) { float.parse(decoded) })
-      |> result.map_error(fn(_) { error.NaNError })
+      case decoded {
+        "" -> Ok(0.0)
+        _ ->
+          int.parse(decoded)
+          |> result.map(int.to_float)
+          |> result.try_recover(fn(_) { float.parse(decoded) })
+          |> result.map_error(fn(_) { error.NaNError })
+      }
     }
     "Float" -> {
       let assert Ok(decoded) = decode.run(input, decode.float)
@@ -141,6 +146,7 @@ pub fn dynamic_to_float(
         False -> Ok(0.0)
       }
     }
+    "Nil" -> Ok(0.0)
 
     t -> panic as { "Cannot convert type: " <> t }
   }
