@@ -79,6 +79,7 @@ pub fn evaluate_operation(
     operator.Multiply -> multiply(values)
     operator.Minus -> minus(values)
     operator.Divide -> divide(values)
+    operator.Substring -> substring(values)
   }
 }
 
@@ -394,5 +395,46 @@ fn divide(
     [_, ..] ->
       util.chain_reduce_result(float_values, util.divide)
       |> result.map(util.float_to_dynamic)
+  }
+}
+
+fn substring(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  case evaluated_values {
+    [first] ->
+      decoding.dynamic_to_string(first)
+      |> result.map(dynamic.string)
+    [first, second] -> {
+      use second <- result.try(decoding.dynamic_to_int(second))
+      use first <- result.map(decoding.dynamic_to_string(first))
+      case second < 0 {
+        True -> string.length(first) + second
+        False -> second
+      }
+      |> string.drop_start(first, _)
+      |> dynamic.string
+    }
+    [first, second, third] -> {
+      use third <- result.try(decoding.dynamic_to_int(third))
+      use second <- result.try(decoding.dynamic_to_int(second))
+      use first <- result.map(decoding.dynamic_to_string(first))
+      let left_trimmed =
+        case second < 0 {
+          True -> string.length(first) + second
+          False -> second
+        }
+        |> string.drop_start(first, _)
+
+      case third < 0 {
+        True -> -third
+        False -> string.length(left_trimmed) - third
+      }
+      |> string.drop_end(left_trimmed, _)
+      |> dynamic.string
+    }
+
+    _ -> Error(error.InvalidArgumentsError)
   }
 }

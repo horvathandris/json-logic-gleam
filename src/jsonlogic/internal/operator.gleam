@@ -20,4 +20,5 @@ pub type Operator {
   Multiply
   Minus
   Divide
+  Substring
 }

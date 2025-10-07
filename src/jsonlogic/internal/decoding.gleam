@@ -115,7 +115,42 @@ pub fn decode_operator(
     "*" -> Ok(operator.Multiply)
     "-" -> Ok(operator.Minus)
     "/" -> Ok(operator.Divide)
+    "substr" -> Ok(operator.Substring)
     _ -> Error(error.UnknownOperatorError(operator))
+  }
+}
+
+pub fn dynamic_to_int(
+  input: dynamic.Dynamic,
+) -> Result(Int, error.EvaluationError) {
+  case dynamic.classify(input) {
+    "String" -> {
+      let assert Ok(decoded) = decode.run(input, decode.string)
+      case decoded {
+        "" -> Ok(0)
+        _ ->
+          float.parse(decoded)
+          |> result.map(float.truncate)
+          |> result.try_recover(fn(_) { int.parse(decoded) })
+          |> result.map_error(fn(_) { error.NaNError })
+      }
+    }
+    "Int" -> {
+      let assert Ok(decoded) = decode.run(input, decode.int)
+      Ok(decoded)
+    }
+    "Float" -> {
+      let assert Ok(decoded) = decode.run(input, decode.float)
+      Ok(float.truncate(decoded))
+    }
+    "Bool" -> {
+      let assert Ok(decoded) = decode.run(input, decode.bool)
+      case decoded {
+        True -> Ok(1)
+        False -> Ok(0)
+      }
+    }
+    t -> panic as { "Cannot convert type: " <> t }
   }
 }
 

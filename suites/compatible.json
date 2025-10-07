@@ -491,6 +491,55 @@
     "rule": { "/": ["1", 1] },
     "result": 1
   },
+  "Substring",
+  {
+    "description": "{\"substr\":[\"jsonlogic\",4]}",
+    "rule": { "substr": ["jsonlogic", 4] },
+    "data": null,
+    "result": "logic"
+  },
+  {
+    "description": "{\"substr\":[\"jsonlogic\",-5]}",
+    "rule": { "substr": ["jsonlogic", -5] },
+    "data": null,
+    "result": "logic"
+  },
+  {
+    "description": "{\"substr\":[\"jsonlogic\",0,1]}",
+    "rule": { "substr": ["jsonlogic", 0, 1] },
+    "data": null,
+    "result": "j"
+  },
+  {
+    "description": "{\"substr\":[\"jsonlogic\",-1,1]}",
+    "rule": { "substr": ["jsonlogic", -1, 1] },
+    "data": null,
+    "result": "c"
+  },
+  {
+    "description": "{\"substr\":[\"jsonlogic\",4,5]}",
+    "rule": { "substr": ["jsonlogic", 4, 5] },
+    "data": null,
+    "result": "logic"
+  },
+  {
+    "description": "{\"substr\":[\"jsonlogic\",-5,5]}",
+    "rule": { "substr": ["jsonlogic", -5, 5] },
+    "data": null,
+    "result": "logic"
+  },
+  {
+    "description": "{\"substr\":[\"jsonlogic\",-5,-2]}",
+    "rule": { "substr": ["jsonlogic", -5, -2] },
+    "data": null,
+    "result": "log"
+  },
+  {
+    "description": "{\"substr\":[\"jsonlogic\",1,-5]}",
+    "rule": { "substr": ["jsonlogic", 1, -5] },
+    "data": null,
+    "result": "son"
+  },
   {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {
