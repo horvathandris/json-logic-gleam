@@ -457,6 +457,26 @@
     "result": 1
   },
   {
+    "description": "{\"-\":[2,3]}",
+    "rule": { "-": [2, 3] },
+    "result": -1
+  },
+  {
+    "description": "{\"-\":[3,2]}",
+    "rule": { "-": [3, 2] },
+    "result": 1
+  },
+  {
+    "description": "{\"-\":[3]}",
+    "rule": { "-": [3] },
+    "result": -3
+  },
+  {
+    "description": "{\"-\":[\"1\",1]}",
+    "rule": { "-": ["1", 1] },
+    "result": 0
+  },
+  {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {
       "and": [{ ">": [3, 1] }, true]

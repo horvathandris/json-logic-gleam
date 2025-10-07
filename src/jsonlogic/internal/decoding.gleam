@@ -111,8 +111,9 @@ pub fn decode_operator(
     "%" -> Ok(operator.Modulo)
     "max" -> Ok(operator.Max)
     "min" -> Ok(operator.Min)
-    "+" -> Ok(operator.Sum)
+    "+" -> Ok(operator.Plus)
     "*" -> Ok(operator.Multiply)
+    "-" -> Ok(operator.Minus)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }

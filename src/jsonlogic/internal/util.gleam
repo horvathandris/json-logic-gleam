@@ -63,8 +63,17 @@ pub fn modulo(a: Float, b: Float) -> Result(Float, error.EvaluationError) {
 
 pub fn float_to_dynamic(value: Float) -> dynamic.Dynamic {
   let truncated = float.truncate(value)
+  let is_zero = is_zero(value)
   case value == int.to_float(truncated) {
     True -> dynamic.int(truncated)
+    False if is_zero -> dynamic.int(0)
     False -> dynamic.float(value)
+  }
+}
+
+fn is_zero(value: Float) -> Bool {
+  case value == 0.0, value == -0.0 {
+    True, _ | _, True -> True
+    _, _ -> False
   }
 }

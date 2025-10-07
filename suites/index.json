@@ -2,5 +2,6 @@
   "compatible.json",
   "arithmetic/modulo.json",
   "arithmetic/plus.json",
-  "arithmetic/multiply.json"
+  "arithmetic/multiply.json",
+  "arithmetic/minus.json"
 ]

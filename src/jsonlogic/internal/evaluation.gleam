@@ -75,8 +75,9 @@ pub fn evaluate_operation(
     operator.Modulo -> modulo(values)
     operator.Max -> max(values)
     operator.Min -> min(values)
-    operator.Sum -> sum(values)
+    operator.Plus -> plus(values)
     operator.Multiply -> multiply(values)
+    operator.Minus -> minus(values) |> echo
   }
 }
 
@@ -325,7 +326,7 @@ fn min(
   }
 }
 
-fn sum(
+fn plus(
   values: List(rule.Rule),
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate))
@@ -356,5 +357,25 @@ fn multiply(
       float.product(float_values)
       |> util.float_to_dynamic
       |> Ok
+  }
+}
+
+fn minus(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  case float_values {
+    [] -> Ok(dynamic.int(0))
+    [first] ->
+      float.negate(first)
+      |> util.float_to_dynamic
+      |> Ok
+    [_, ..] ->
+      util.chain_reduce(float_values, float.subtract)
+      |> result.map(util.float_to_dynamic)
   }
 }
