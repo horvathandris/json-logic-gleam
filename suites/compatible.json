@@ -984,12 +984,41 @@
     "data": null,
     "result": "apple"
   },
+  "# Compound Tests",
   {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {
       "and": [{ ">": [3, 1] }, true]
     },
     "result": true
+  },
+  {
+    "description": "{\"and\":[{\">\":[3,1]},false]}",
+    "rule": {
+      "and": [{ ">": [3, 1] }, false]
+    },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[{\">\":[3,1]},{\"!\":true}]}",
+    "rule": {
+      "and": [{ ">": [3, 1] }, { "!": true }]
+    },
+    "result": false
+  },
+  {
+    "description": "{\"and\":[{\">\":[3,1]},{\"<\":[1,3]}]}",
+    "rule": {
+      "and": [{ ">": [3, 1] }, { "<": [1, 3] }]
+    },
+    "result": true
+  },
+  {
+    "description": "{\"?:\":[{\">\":[3,1]},\"visible\",\"hidden\"]}",
+    "rule": {
+      "?:": [{ ">": [3, 1] }, "visible", "hidden"]
+    },
+    "result": "visible"
   },
   "EOF"
 ]
