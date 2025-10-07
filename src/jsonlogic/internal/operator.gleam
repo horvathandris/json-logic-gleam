@@ -14,4 +14,6 @@ pub type Operator {
   In
   Concatenate
   Modulo
+  Max
+  Min
 }

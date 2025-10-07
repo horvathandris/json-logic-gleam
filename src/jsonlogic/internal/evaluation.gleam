@@ -2,7 +2,6 @@ import gleam/bool
 import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/float
-import gleam/int
 import gleam/list
 import gleam/result
 import gleam/string
@@ -74,6 +73,8 @@ pub fn evaluate_operation(
     operator.In -> in(values)
     operator.Concatenate -> concatenate(values)
     operator.Modulo -> modulo(values)
+    operator.Max -> max(values)
+    operator.Min -> min(values)
   }
 }
 
@@ -282,8 +283,42 @@ fn modulo(
   ))
   case list.length(float_values) > 1 {
     True ->
-      util.chain_reduce(float_values, util.modulo)
+      util.chain_reduce_result(float_values, util.modulo)
       |> result.map(util.float_to_dynamic)
     False -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn max(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  case float_values {
+    [first] -> Ok(util.float_to_dynamic(first))
+    [_, ..] ->
+      util.chain_reduce(float_values, float.max)
+      |> result.map(util.float_to_dynamic)
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn min(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  case float_values {
+    [first] -> Ok(util.float_to_dynamic(first))
+    [_, ..] ->
+      util.chain_reduce(float_values, float.min)
+      |> result.map(util.float_to_dynamic)
+    _ -> Error(error.InvalidArgumentsError)
   }
 }

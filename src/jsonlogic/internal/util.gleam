@@ -25,6 +25,16 @@ pub fn comparison_reduce(
 
 pub fn chain_reduce(
   values: List(Float),
+  operator: fn(Float, Float) -> Float,
+) -> Result(Float, error.EvaluationError) {
+  case values {
+    [first, ..rest] -> Ok(list.fold(rest, first, operator))
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+pub fn chain_reduce_result(
+  values: List(Float),
   operator: fn(Float, Float) -> Result(Float, error.EvaluationError),
 ) -> Result(Float, error.EvaluationError) {
   case values {

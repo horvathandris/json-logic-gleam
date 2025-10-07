@@ -105,6 +105,8 @@ pub fn decode_operator(
     "in" -> Ok(operator.In)
     "cat" -> Ok(operator.Concatenate)
     "%" -> Ok(operator.Modulo)
+    "max" -> Ok(operator.Max)
+    "min" -> Ok(operator.Min)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
