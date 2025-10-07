@@ -17,4 +17,5 @@ pub type Operator {
   Max
   Min
   Sum
+  Multiply
 }

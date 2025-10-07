@@ -112,6 +112,7 @@ pub fn decode_operator(
     "max" -> Ok(operator.Max)
     "min" -> Ok(operator.Min)
     "+" -> Ok(operator.Sum)
+    "*" -> Ok(operator.Multiply)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }

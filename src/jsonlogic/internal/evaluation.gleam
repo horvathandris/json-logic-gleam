@@ -76,6 +76,7 @@ pub fn evaluate_operation(
     operator.Max -> max(values)
     operator.Min -> min(values)
     operator.Sum -> sum(values)
+    operator.Multiply -> multiply(values)
   }
 }
 
@@ -336,6 +337,23 @@ fn sum(
     [] -> Ok(dynamic.int(0))
     [_, ..] ->
       float.sum(float_values)
+      |> util.float_to_dynamic
+      |> Ok
+  }
+}
+
+fn multiply(
+  values: List(rule.Rule),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate))
+  use float_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_float,
+  ))
+  case float_values {
+    [] -> Ok(dynamic.int(1))
+    [_, ..] ->
+      float.product(float_values)
       |> util.float_to_dynamic
       |> Ok
   }

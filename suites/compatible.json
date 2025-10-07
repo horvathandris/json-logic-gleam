@@ -437,6 +437,26 @@
     "result": 2
   },
   {
+    "description": "{\"*\":[3,2]}",
+    "rule": { "*": [3, 2] },
+    "result": 6
+  },
+  {
+    "description": "{\"*\":[2,2,2]}",
+    "rule": { "*": [2, 2, 2] },
+    "result": 8
+  },
+  {
+    "description": "{\"*\":[1]}",
+    "rule": { "*": [1] },
+    "result": 1
+  },
+  {
+    "description": "{\"*\":[\"1\",1]}",
+    "rule": { "*": ["1", 1] },
+    "result": 1
+  },
+  {
     "description": "{\"and\":[{\">\":[3,1]},true]}",
     "rule": {
       "and": [{ ">": [3, 1] }, true]
