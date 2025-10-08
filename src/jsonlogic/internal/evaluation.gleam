@@ -3,6 +3,7 @@ import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/float
 import gleam/list
+import gleam/option
 import gleam/result
 import gleam/string
 import jsonlogic/internal/decoding
@@ -89,6 +90,7 @@ pub fn evaluate_operation(
     operator.Substring -> substring(values, data)
     operator.Merge -> merge(values, data)
     operator.If -> if_(values, data)
+    operator.Variable -> variable(values, data)
   }
 }
 
@@ -97,8 +99,7 @@ fn abstract_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
     [first, second] -> {
       use first <- result.try(evaluate(first, data))
       use second <- result.try(evaluate(second, data))
-      use first <- result.try(decoding.dynamic_to_float(first))
-      use second <- result.try(decoding.dynamic_to_float(second))
+      use #(first, second) <- result.try(decoding.coerce_types(first, second))
       Ok(first == second)
     }
     _ -> Error(error.InvalidArgumentsError)
@@ -110,8 +111,7 @@ fn abstract_not_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
     [first, second] -> {
       use first <- result.try(evaluate(first, data))
       use second <- result.try(evaluate(second, data))
-      use first <- result.try(decoding.dynamic_to_float(first))
-      use second <- result.try(decoding.dynamic_to_float(second))
+      use #(first, second) <- result.try(decoding.coerce_types(first, second))
       Ok(first != second)
     }
     _ -> Error(error.InvalidArgumentsError)
@@ -526,5 +526,18 @@ fn do_if(values: List(#(Bool, dynamic.Dynamic))) {
     [#(True, _), #(_, second), ..] -> Ok(second)
     [#(False, _), _, #(_, third)] -> Ok(third)
     [_, _, ..rest] -> do_if(rest)
+  }
+}
+
+fn variable(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
+  case evaluated_values {
+    [] -> Ok(dynamic.nil())
+    [first] -> decoding.decode_data(first, data, or: option.None) |> echo
+    [first, second, ..] ->
+      decoding.decode_data(first, data, or: option.Some(second))
   }
 }

@@ -1,4 +1,5 @@
 pub type Operator {
+  Variable
   AbstractEquals
   AbstractNotEquals
   StrictEquals

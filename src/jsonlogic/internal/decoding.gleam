@@ -6,6 +6,7 @@ import gleam/float
 import gleam/int
 import gleam/json
 import gleam/list
+import gleam/option
 import gleam/result
 import gleam/string
 import jsonlogic/internal/error
@@ -94,6 +95,7 @@ pub fn decode_operator(
   operator: String,
 ) -> Result(operator.Operator, error.EvaluationError) {
   case operator {
+    "var" -> Ok(operator.Variable)
     "==" -> Ok(operator.AbstractEquals)
     "!=" -> Ok(operator.AbstractNotEquals)
     "===" -> Ok(operator.StrictEquals)
@@ -148,10 +150,9 @@ pub fn dynamic_to_int(
     }
     "Bool" -> {
       let assert Ok(decoded) = decode.run(input, decode.bool)
-      case decoded {
-        True -> Ok(1)
-        False -> Ok(0)
-      }
+      bool_to_float(decoded)
+      |> float.truncate
+      |> Ok
     }
     t -> panic as { "Cannot convert type: " <> t }
   }
@@ -182,10 +183,8 @@ pub fn dynamic_to_float(
     }
     "Bool" -> {
       let assert Ok(decoded) = decode.run(input, decode.bool)
-      case decoded {
-        True -> Ok(1.0)
-        False -> Ok(0.0)
-      }
+      bool_to_float(decoded)
+      |> Ok
     }
     "Nil" -> Ok(0.0)
 
@@ -246,4 +245,63 @@ pub fn dynamic_to_array(
     ]),
   )
   |> result.map_error(error.DecodeError)
+}
+
+pub fn coerce_types(
+  first: dynamic.Dynamic,
+  second: dynamic.Dynamic,
+) -> Result(#(dynamic.Dynamic, dynamic.Dynamic), error.EvaluationError) {
+  case dynamic.classify(first), dynamic.classify(second) {
+    x, y if x == y -> Ok(#(first, second))
+
+    "Bool", _ -> {
+      let assert Ok(first) = decode.run(first, decode.bool)
+      bool_to_float(first)
+      |> dynamic.float
+      |> coerce_types(second)
+    }
+    _, "Bool" -> {
+      let assert Ok(second) = decode.run(second, decode.bool)
+      bool_to_float(second)
+      |> dynamic.float
+      |> coerce_types(first)
+    }
+    "Int", "String" | "Float", "String" | "String", "Float" | "String", "Int" -> {
+      use first <- result.try(dynamic_to_float(first))
+      use second <- result.map(dynamic_to_float(second))
+      #(dynamic.float(first), dynamic.float(second))
+    }
+    a, b -> panic as { "Unsupported types: " <> a <> " and " <> b }
+  }
+}
+
+fn bool_to_float(value: Bool) -> Float {
+  case value {
+    True -> 1.0
+    False -> 0.0
+  }
+}
+
+pub fn decode_data(
+  key: dynamic.Dynamic,
+  data: dynamic.Dynamic,
+  or default: option.Option(dynamic.Dynamic),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use key <- result.map(dynamic_to_string(key))
+  let keys = string.split(key, on: ".")
+  decode.run(data, decode.at(keys, decode.dynamic))
+  |> result.try_recover(fn(e) {
+    let indices =
+      list.try_map(keys, int.parse)
+      |> result.replace_error(e)
+    use indices <- result.try(indices)
+    decode.run(data, decode.at(indices, decode.dynamic))
+    |> result.replace_error(e)
+  })
+  |> result.lazy_unwrap(fn() {
+    case default {
+      option.Some(default) -> default
+      option.None -> dynamic.nil()
+    }
+  })
 }
