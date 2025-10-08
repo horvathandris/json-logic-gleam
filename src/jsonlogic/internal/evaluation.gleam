@@ -535,7 +535,7 @@ fn variable(
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   case evaluated_values {
-    [] -> Ok(dynamic.nil())
+    [] -> Ok(data)
     [first] -> decoding.decode_data(first, data, or: option.None) |> echo
     [first, second, ..] ->
       decoding.decode_data(first, data, or: option.Some(second))

@@ -287,6 +287,21 @@ pub fn decode_data(
   data: dynamic.Dynamic,
   or default: option.Option(dynamic.Dynamic),
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  case
+    key == dynamic.nil(),
+    key == dynamic.string(""),
+    key == dynamic.list([])
+  {
+    True, _, _ | _, True, _ | _, _, True -> Ok(data)
+    _, _, _ -> do_decode_data(key, data, default)
+  }
+}
+
+fn do_decode_data(
+  key: dynamic.Dynamic,
+  data: dynamic.Dynamic,
+  or default: option.Option(dynamic.Dynamic),
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use key <- result.map(dynamic_to_string(key))
   let keys = string.split(key, on: ".")
   decode.run(data, decode.at(keys, decode.dynamic))
