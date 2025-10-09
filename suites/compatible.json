@@ -1287,5 +1287,22 @@
     "data": { "a": { "b": "apple brownie" } },
     "result": ["a.c"]
   },
+  "Missing and If are friends, because empty arrays are falsey in JsonLogic",
+  {
+    "description": "{\"if\":[{\"missing\":\"a\"},\"missed it\",\"found it\"]}",
+    "rule": {
+      "if": [{ "missing": "a" }, "missed it", "found it"]
+    },
+    "data": { "a": "apple" },
+    "result": "found it"
+  },
+  {
+    "description": "{\"if\":[{\"missing\":\"a\"},\"missed it\",\"found it\"]}",
+    "rule": {
+      "if": [{ "missing": "a" }, "missed it", "found it"]
+    },
+    "data": { "b": "banana" },
+    "result": "missed it"
+  },
   "EOF"
 ]
