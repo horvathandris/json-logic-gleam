@@ -1197,5 +1197,95 @@
     "data": 1,
     "result": 1
   },
+  "Missing",
+  {
+    "description": "{\"missing\":[]}",
+    "rule": { "missing": [] },
+    "data": null,
+    "result": []
+  },
+  {
+    "description": "{\"missing\":[\"a\"]}",
+    "rule": { "missing": ["a"] },
+    "data": null,
+    "result": ["a"]
+  },
+  {
+    "description": "{\"missing\":\"a\"}",
+    "rule": { "missing": "a" },
+    "data": null,
+    "result": ["a"]
+  },
+  {
+    "description": "{\"missing\":\"a\"}",
+    "rule": { "missing": "a" },
+    "data": { "a": "apple" },
+    "result": []
+  },
+  {
+    "description": "{\"missing\":[\"a\"]}",
+    "rule": { "missing": ["a"] },
+    "data": { "a": "apple" },
+    "result": []
+  },
+  {
+    "description": "{\"missing\":[\"a\",\"b\"]}",
+    "rule": { "missing": ["a", "b"] },
+    "data": { "a": "apple" },
+    "result": ["b"]
+  },
+  {
+    "description": "{\"missing\":[\"a\",\"b\"]}",
+    "rule": { "missing": ["a", "b"] },
+    "data": { "b": "banana" },
+    "result": ["a"]
+  },
+  {
+    "description": "{\"missing\":[\"a\",\"b\"]}",
+    "rule": { "missing": ["a", "b"] },
+    "data": { "a": "apple", "b": "banana" },
+    "result": []
+  },
+  {
+    "description": "{\"missing\":[\"a\",\"b\"]}",
+    "rule": { "missing": ["a", "b"] },
+    "result": ["a", "b"]
+  },
+  {
+    "description": "{\"missing\":[\"a\",\"b\"]}",
+    "rule": { "missing": ["a", "b"] },
+    "data": null,
+    "result": ["a", "b"]
+  },
+  {
+    "description": "{\"missing\":[\"a.b\"]}",
+    "rule": { "missing": ["a.b"] },
+    "data": null,
+    "result": ["a.b"]
+  },
+  {
+    "description": "{\"missing\":[\"a.b\"]}",
+    "rule": { "missing": ["a.b"] },
+    "data": { "a": "apple" },
+    "result": ["a.b"]
+  },
+  {
+    "description": "{\"missing\":[\"a.b\"]}",
+    "rule": { "missing": ["a.b"] },
+    "data": { "a": { "c": "apple cake" } },
+    "result": ["a.b"]
+  },
+  {
+    "description": "{\"missing\":[\"a.b\"]}",
+    "rule": { "missing": ["a.b"] },
+    "data": { "a": { "b": "apple brownie" } },
+    "result": []
+  },
+  {
+    "description": "{\"missing\":[\"a.b\",\"a.c\"]}",
+    "rule": { "missing": ["a.b", "a.c"] },
+    "data": { "a": { "b": "apple brownie" } },
+    "result": ["a.c"]
+  },
   "EOF"
 ]

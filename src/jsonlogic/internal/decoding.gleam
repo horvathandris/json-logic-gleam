@@ -96,6 +96,7 @@ pub fn decode_operator(
 ) -> Result(operator.Operator, error.EvaluationError) {
   case operator {
     "var" -> Ok(operator.Variable)
+    "missing" -> Ok(operator.Missing)
     "==" -> Ok(operator.AbstractEquals)
     "!=" -> Ok(operator.AbstractNotEquals)
     "===" -> Ok(operator.StrictEquals)

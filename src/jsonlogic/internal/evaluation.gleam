@@ -91,6 +91,7 @@ pub fn evaluate_operation(
     operator.Merge -> merge(values, data)
     operator.If -> if_(values, data)
     operator.Variable -> variable(values, data)
+    operator.Missing -> missing(values, data)
   }
 }
 
@@ -536,8 +537,29 @@ fn variable(
   use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   case evaluated_values {
     [] -> Ok(data)
-    [first] -> decoding.decode_data(first, data, or: option.None) |> echo
+    [first] -> decoding.decode_data(first, data, or: option.None)
     [first, second, ..] ->
       decoding.decode_data(first, data, or: option.Some(second))
   }
+}
+
+fn missing(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
+  use string_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_string,
+  ))
+  echo string_values
+  list.try_map(string_values, fn(key) {
+    dynamic.string(key)
+    |> decoding.decode_data(data, or: option.None)
+    |> result.map(fn(resolved) { #(key, resolved) })
+  })
+  |> echo
+  |> result.map(list.filter(_, fn(value) { value.1 == dynamic.nil() }))
+  |> result.map(list.map(_, fn(value) { dynamic.string(value.0) }))
+  |> result.map(dynamic.list)
 }
