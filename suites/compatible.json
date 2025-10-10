@@ -1304,5 +1304,36 @@
     "data": { "b": "banana" },
     "result": "missed it"
   },
+  "Missing, Merge, and If are friends. VIN is always required, APR is only required if financing is true.",
+  {
+    "description": "{\"missing\":{\"merge\":[\"vin\",{\"if\":[{\"var\":\"financing\"},[\"apr\"],[]]}]}}",
+    "rule": {
+      "missing": {
+        "merge": [
+          "vin",
+          {
+            "if": [{ "var": "financing" }, ["apr"], []]
+          }
+        ]
+      }
+    },
+    "data": { "financing": true },
+    "result": ["vin", "apr"]
+  },
+  {
+    "description": "{\"missing\":{\"merge\":[\"vin\",{\"if\":[{\"var\":\"financing\"},[\"apr\"],[]]}]}}",
+    "rule": {
+      "missing": {
+        "merge": [
+          "vin",
+          {
+            "if": [{ "var": "financing" }, ["apr"], []]
+          }
+        ]
+      }
+    },
+    "data": { "financing": false },
+    "result": ["vin"]
+  },
   "EOF"
 ]

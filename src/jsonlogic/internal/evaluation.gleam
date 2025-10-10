@@ -548,17 +548,16 @@ fn missing(
   data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
+  let flattened_values = util.flatten(evaluated_values)
   use string_values <- result.try(list.try_map(
-    evaluated_values,
+    flattened_values,
     decoding.dynamic_to_string,
   ))
-  echo string_values
   list.try_map(string_values, fn(key) {
     dynamic.string(key)
     |> decoding.decode_data(data, or: option.None)
     |> result.map(fn(resolved) { #(key, resolved) })
   })
-  |> echo
   |> result.map(list.filter(_, fn(value) { value.1 == dynamic.nil() }))
   |> result.map(list.map(_, fn(value) { dynamic.string(value.0) }))
   |> result.map(dynamic.list)

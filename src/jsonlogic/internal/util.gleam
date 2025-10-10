@@ -1,4 +1,5 @@
 import gleam/dynamic
+import gleam/dynamic/decode
 import gleam/float
 import gleam/int
 import gleam/list
@@ -81,4 +82,16 @@ fn is_zero(value: Float) -> Bool {
     True, _ | _, True -> True
     _, _ -> False
   }
+}
+
+pub fn flatten(values: List(dynamic.Dynamic)) -> List(dynamic.Dynamic) {
+  use value <- list.flat_map(values)
+  let assert Ok(decoded) =
+    decode.run(
+      value,
+      decode.one_of(decode.list(decode.dynamic), or: [
+        decode.map(decode.dynamic, list.wrap),
+      ]),
+    )
+  decoded
 }
