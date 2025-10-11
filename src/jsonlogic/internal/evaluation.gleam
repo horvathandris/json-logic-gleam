@@ -92,6 +92,7 @@ pub fn evaluate_operation(
     operator.If -> if_(values, data)
     operator.Variable -> variable(values, data)
     operator.Missing -> missing(values, data)
+    operator.MissingSome -> missing_some(values, data)
   }
 }
 
@@ -549,16 +550,39 @@ fn missing(
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
   let flattened_values = util.flatten(evaluated_values)
-  use string_values <- result.try(list.try_map(
-    flattened_values,
-    decoding.dynamic_to_string,
-  ))
-  list.try_map(string_values, fn(key) {
+  do_missing(flattened_values, data)
+  |> result.map(dynamic.list)
+}
+
+fn do_missing(
+  keys: List(dynamic.Dynamic),
+  data: dynamic.Dynamic,
+) -> Result(List(dynamic.Dynamic), error.EvaluationError) {
+  use string_keys <- result.try(list.try_map(keys, decoding.dynamic_to_string))
+  list.try_map(string_keys, fn(key) {
     dynamic.string(key)
     |> decoding.decode_data(data, or: option.None)
     |> result.map(fn(resolved) { #(key, resolved) })
   })
   |> result.map(list.filter(_, fn(value) { value.1 == dynamic.nil() }))
   |> result.map(list.map(_, fn(value) { dynamic.string(value.0) }))
-  |> result.map(dynamic.list)
+}
+
+fn missing_some(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
+  case evaluated_values {
+    [first, second] -> {
+      use minimum_keys <- result.try(decoding.dynamic_to_int(first))
+      use keys <- result.try(decoding.dynamic_to_array(second))
+      use missing_keys <- result.map(do_missing(keys, data))
+      case list.length(keys) - list.length(missing_keys) >= minimum_keys {
+        True -> dynamic.list([])
+        False -> dynamic.list(missing_keys)
+      }
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
 }

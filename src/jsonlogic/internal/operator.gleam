@@ -1,5 +1,7 @@
 pub type Operator {
   Variable
+  Missing
+  MissingSome
   AbstractEquals
   AbstractNotEquals
   StrictEquals
@@ -25,5 +27,4 @@ pub type Operator {
   Merge
   If
   DoubleNegate
-  Missing
 }

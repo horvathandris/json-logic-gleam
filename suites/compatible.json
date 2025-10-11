@@ -1287,6 +1287,79 @@
     "data": { "a": { "b": "apple brownie" } },
     "result": ["a.c"]
   },
+  "Missing some",
+  {
+    "description": "{\"missing_some\":[1,[\"a\",\"b\"]]}",
+    "rule": {
+      "missing_some": [1, ["a", "b"]]
+    },
+    "data": { "a": "apple" },
+    "result": []
+  },
+  {
+    "description": "{\"missing_some\":[1,[\"a\",\"b\"]]}",
+    "rule": {
+      "missing_some": [1, ["a", "b"]]
+    },
+    "data": { "b": "banana" },
+    "result": []
+  },
+  {
+    "description": "{\"missing_some\":[1,[\"a\",\"b\"]]}",
+    "rule": {
+      "missing_some": [1, ["a", "b"]]
+    },
+    "data": { "a": "apple", "b": "banana" },
+    "result": []
+  },
+  {
+    "description": "{\"missing_some\":[1,[\"a\",\"b\"]]}",
+    "rule": {
+      "missing_some": [1, ["a", "b"]]
+    },
+    "data": { "c": "carrot" },
+    "result": ["a", "b"]
+  },
+  {
+    "description": "{\"missing_some\":[2,[\"a\",\"b\",\"c\"]]}",
+    "rule": {
+      "missing_some": [2, ["a", "b", "c"]]
+    },
+    "data": { "a": "apple", "b": "banana" },
+    "result": []
+  },
+  {
+    "description": "{\"missing_some\":[2,[\"a\",\"b\",\"c\"]]}",
+    "rule": {
+      "missing_some": [2, ["a", "b", "c"]]
+    },
+    "data": { "a": "apple", "c": "carrot" },
+    "result": []
+  },
+  {
+    "description": "{\"missing_some\":[2,[\"a\",\"b\",\"c\"]]}",
+    "rule": {
+      "missing_some": [2, ["a", "b", "c"]]
+    },
+    "data": { "a": "apple", "b": "banana", "c": "carrot" },
+    "result": []
+  },
+  {
+    "description": "{\"missing_some\":[2,[\"a\",\"b\",\"c\"]]}",
+    "rule": {
+      "missing_some": [2, ["a", "b", "c"]]
+    },
+    "data": { "a": "apple", "d": "durian" },
+    "result": ["b", "c"]
+  },
+  {
+    "description": "{\"missing_some\":[2,[\"a\",\"b\",\"c\"]]}",
+    "rule": {
+      "missing_some": [2, ["a", "b", "c"]]
+    },
+    "data": { "d": "durian", "e": "eggplant" },
+    "result": ["a", "b", "c"]
+  },
   "Missing and If are friends, because empty arrays are falsey in JsonLogic",
   {
     "description": "{\"if\":[{\"missing\":\"a\"},\"missed it\",\"found it\"]}",
