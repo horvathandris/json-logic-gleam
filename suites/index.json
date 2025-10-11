@@ -3,5 +3,6 @@
   "arithmetic/modulo.json",
   "arithmetic/plus.json",
   "arithmetic/multiply.json",
-  "arithmetic/minus.json"
+  "arithmetic/minus.json",
+  "control/doublebang.json"
 ]

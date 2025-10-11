@@ -219,6 +219,7 @@ pub fn dynamic_to_bool(
       let assert Ok(decoded) = decode.run(input, decode.list(decode.dynamic))
       Ok(#(decoded != [], input))
     }
+    "Nil" -> Ok(#(False, input))
 
     t -> panic as { "Cannot convert type: " <> t }
   }
