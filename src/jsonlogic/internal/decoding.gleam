@@ -123,6 +123,7 @@ pub fn decode_operator(
     "substr" -> Ok(operator.Substring)
     "merge" -> Ok(operator.Merge)
     "if" -> Ok(operator.If)
+    "filter" -> Ok(operator.Filter)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }

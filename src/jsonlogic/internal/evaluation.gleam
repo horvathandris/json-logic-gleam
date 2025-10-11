@@ -93,7 +93,16 @@ pub fn evaluate_operation(
     operator.Variable -> variable(values, data)
     operator.Missing -> missing(values, data)
     operator.MissingSome -> missing_some(values, data)
+    operator.Filter -> filter(values, data)
   }
+}
+
+fn evaluate_preserve_data(
+  value: rule.Rule,
+  data: dynamic.Dynamic,
+) -> Result(#(dynamic.Dynamic, dynamic.Dynamic), error.EvaluationError) {
+  use evaluated <- result.map(evaluate(value, data))
+  #(evaluated, data)
 }
 
 fn abstract_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
@@ -582,6 +591,35 @@ fn missing_some(
         True -> dynamic.list([])
         False -> dynamic.list(missing_keys)
       }
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn filter(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  case values {
+    [first, second] -> {
+      use input <- result.try(evaluate(first, data))
+      use input <- result.try(decoding.dynamic_to_array(input))
+      use evaluated <- result.try(
+        list.try_map(input, evaluate_preserve_data(second, _)),
+      )
+      use evaluated <- result.map(
+        list.try_map(evaluated, fn(value) {
+          let predicate = decoding.dynamic_to_bool(value.0)
+          case predicate {
+            Ok(#(True, _)) -> Ok(option.Some(value.1))
+            Ok(#(False, _)) -> Ok(option.None)
+            Error(e) -> Error(e)
+          }
+        }),
+      )
+
+      option.values(evaluated)
+      |> dynamic.list
     }
     _ -> Error(error.InvalidArgumentsError)
   }

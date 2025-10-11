@@ -27,4 +27,5 @@ pub type Operator {
   Merge
   If
   DoubleNegate
+  Filter
 }
