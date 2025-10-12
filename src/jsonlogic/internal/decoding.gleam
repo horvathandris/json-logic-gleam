@@ -125,6 +125,7 @@ pub fn decode_operator(
     "if" -> Ok(operator.If)
     "filter" -> Ok(operator.Filter)
     "map" -> Ok(operator.Map)
+    "reduce" -> Ok(operator.Reduce)
     "all" -> Ok(operator.All)
     "none" -> Ok(operator.None)
     "some" -> Ok(operator.Some)

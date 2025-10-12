@@ -95,7 +95,7 @@ pub fn evaluate_operation(
     operator.MissingSome -> missing_some(values, data)
     operator.Filter -> filter(values, data)
     operator.Map -> map(values, data)
-    operator.Reduce -> todo
+    operator.Reduce -> reduce(values, data)
     operator.All -> all(values, data)
     operator.None -> none(values, data)
     operator.Some -> some(values, data)
@@ -645,6 +645,29 @@ fn map(
   }
 }
 
+fn reduce(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  case values {
+    [input, function, initial_value] -> {
+      use input <- result.try(evaluate(input, data))
+      use input <- result.try(decoding.dynamic_to_array(input))
+      use initial_value <- result.try(evaluate(initial_value, data))
+      list.try_fold(input, initial_value, fn(accumulator, current) {
+        evaluate(
+          function,
+          dynamic.properties([
+            #(dynamic.string("current"), current),
+            #(dynamic.string("accumulator"), accumulator),
+          ]),
+        )
+      })
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
 fn all(
   values: List(rule.Rule),
   data: dynamic.Dynamic,
@@ -656,7 +679,7 @@ fn all(
       use evaluated <- result.try(
         list.try_map(input, evaluate_preserve_data(second, _)),
       )
-      list.fold_until(evaluated, Ok(True), fn(_, value) {
+      list.fold_until(evaluated, Ok(False), fn(_, value) {
         case decoding.dynamic_to_bool(value.0) {
           Ok(#(True, _)) -> list.Continue(Ok(True))
           Ok(#(False, _)) -> list.Stop(Ok(False))
