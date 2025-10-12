@@ -124,6 +124,7 @@ pub fn decode_operator(
     "merge" -> Ok(operator.Merge)
     "if" -> Ok(operator.If)
     "filter" -> Ok(operator.Filter)
+    "map" -> Ok(operator.Map)
     _ -> Error(error.UnknownOperatorError(operator))
   }
 }
@@ -244,9 +245,18 @@ pub fn dynamic_to_array(
 ) -> Result(List(dynamic.Dynamic), error.EvaluationError) {
   decode.run(
     input,
-    decode.one_of(decode.list(decode.dynamic), or: [
-      decode.dynamic |> decode.map(list.wrap),
-    ]),
+    decode.one_of(
+      decode.optional(decode.list(decode.dynamic))
+        |> decode.map(fn(value) {
+          case value {
+            option.None -> []
+            option.Some(value) -> value
+          }
+        }),
+      or: [
+        decode.dynamic |> decode.map(list.wrap),
+      ],
+    ),
   )
   |> result.map_error(error.DecodeError)
 }

@@ -94,6 +94,7 @@ pub fn evaluate_operation(
     operator.Missing -> missing(values, data)
     operator.MissingSome -> missing_some(values, data)
     operator.Filter -> filter(values, data)
+    operator.Map -> map(values, data)
   }
 }
 
@@ -620,6 +621,21 @@ fn filter(
 
       option.values(evaluated)
       |> dynamic.list
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn map(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  case values {
+    [first, second] -> {
+      use input <- result.try(evaluate(first, data))
+      use input <- result.try(decoding.dynamic_to_array(input))
+      use evaluated <- result.map(list.try_map(input, evaluate(second, _)))
+      dynamic.list(evaluated)
     }
     _ -> Error(error.InvalidArgumentsError)
   }

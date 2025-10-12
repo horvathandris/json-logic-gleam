@@ -28,4 +28,5 @@ pub type Operator {
   If
   DoubleNegate
   Filter
+  Map
 }
