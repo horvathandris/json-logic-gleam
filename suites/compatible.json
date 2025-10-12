@@ -303,9 +303,9 @@
     "result": 1
   },
   {
-    "description": "{\"?:\":[true,1,2]}",
-    "rule": { "?:": [true, 1, 2] },
-    "result": 1
+    "description": "{\"?:\":[false,1,2]}",
+    "rule": { "?:": [false, 1, 2] },
+    "result": 2
   },
   {
     "description": "{\"in\":[\"Bart\",[\"Bart\",\"Homer\",\"Lisa\",\"Marge\",\"Maggie\"]]}",
@@ -1490,6 +1490,453 @@
       ]
     },
     "result": [1, 2, 3]
+  },
+  {
+    "description": "{\"reduce\":[{\"var\":\"integers\"},{\"+\":[{\"var\":\"current\"},{\"var\":\"accumulator\"}]},0]}",
+    "rule": {
+      "reduce": [
+        { "var": "integers" },
+        {
+          "+": [{ "var": "current" }, { "var": "accumulator" }]
+        },
+        0
+      ]
+    },
+    "data": { "integers": [1, 2, 3, 4] },
+    "result": 10
+  },
+  {
+    "description": "{\"reduce\":[{\"var\":\"integers\"},{\"+\":[{\"var\":\"current\"},{\"var\":\"accumulator\"}]},{\"var\":\"start_with\"}]}",
+    "rule": {
+      "reduce": [
+        { "var": "integers" },
+        {
+          "+": [{ "var": "current" }, { "var": "accumulator" }]
+        },
+        { "var": "start_with" }
+      ]
+    },
+    "data": { "integers": [1, 2, 3, 4], "start_with": 59 },
+    "result": 69
+  },
+  {
+    "description": "{\"reduce\":[{\"var\":\"integers\"},{\"+\":[{\"var\":\"current\"},{\"var\":\"accumulator\"}]},0]}",
+    "rule": {
+      "reduce": [
+        { "var": "integers" },
+        {
+          "+": [{ "var": "current" }, { "var": "accumulator" }]
+        },
+        0
+      ]
+    },
+    "data": null,
+    "result": 0
+  },
+  {
+    "description": "{\"reduce\":[{\"var\":\"integers\"},{\"*\":[{\"var\":\"current\"},{\"var\":\"accumulator\"}]},1]}",
+    "rule": {
+      "reduce": [
+        { "var": "integers" },
+        {
+          "*": [{ "var": "current" }, { "var": "accumulator" }]
+        },
+        1
+      ]
+    },
+    "data": { "integers": [1, 2, 3, 4] },
+    "result": 24
+  },
+  {
+    "description": "{\"reduce\":[{\"var\":\"integers\"},{\"*\":[{\"var\":\"current\"},{\"var\":\"accumulator\"}]},0]}",
+    "rule": {
+      "reduce": [
+        { "var": "integers" },
+        {
+          "*": [{ "var": "current" }, { "var": "accumulator" }]
+        },
+        0
+      ]
+    },
+    "data": { "integers": [1, 2, 3, 4] },
+    "result": 0
+  },
+  {
+    "description": "{\"reduce\":[{\"var\":\"desserts\"},{\"+\":[{\"var\":\"accumulator\"},{\"var\":\"current.qty\"}]},0]}",
+    "rule": {
+      "reduce": [
+        { "var": "desserts" },
+        {
+          "+": [{ "var": "accumulator" }, { "var": "current.qty" }]
+        },
+        0
+      ]
+    },
+    "data": {
+      "desserts": [
+        { "name": "apple", "qty": 1 },
+        { "name": "brownie", "qty": 2 },
+        { "name": "cupcake", "qty": 3 }
+      ]
+    },
+    "result": 6
+  },
+  {
+    "description": "{\"all\":[{\"var\":\"integers\"},{\">=\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "all": [
+        { "var": "integers" },
+        {
+          ">=": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": true
+  },
+  {
+    "description": "{\"all\":[{\"var\":\"integers\"},{\"==\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "all": [
+        { "var": "integers" },
+        {
+          "==": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": false
+  },
+  {
+    "description": "{\"all\":[{\"var\":\"integers\"},{\"<\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "all": [
+        { "var": "integers" },
+        {
+          "<": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": false
+  },
+  {
+    "description": "{\"all\":[{\"var\":\"integers\"},{\"<\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "all": [
+        { "var": "integers" },
+        {
+          "<": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [] },
+    "result": false
+  },
+  {
+    "description": "{\"all\":[{\"var\":\"items\"},{\">=\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "all": [
+        { "var": "items" },
+        {
+          ">=": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": true
+  },
+  {
+    "description": "{\"all\":[{\"var\":\"items\"},{\">\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "all": [
+        { "var": "items" },
+        {
+          ">": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": false
+  },
+  {
+    "description": "{\"all\":[{\"var\":\"items\"},{\"<\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "all": [
+        { "var": "items" },
+        {
+          "<": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": false
+  },
+  {
+    "description": "{\"all\":[{\"var\":\"items\"},{\">=\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "all": [
+        { "var": "items" },
+        {
+          ">=": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": { "items": [] },
+    "result": false
+  },
+  {
+    "description": "{\"none\":[{\"var\":\"integers\"},{\">=\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "none": [
+        { "var": "integers" },
+        {
+          ">=": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": false
+  },
+  {
+    "description": "{\"none\":[{\"var\":\"integers\"},{\"==\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "none": [
+        { "var": "integers" },
+        {
+          "==": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": false
+  },
+  {
+    "description": "{\"none\":[{\"var\":\"integers\"},{\"<\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "none": [
+        { "var": "integers" },
+        {
+          "<": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": true
+  },
+  {
+    "description": "{\"none\":[{\"var\":\"integers\"},{\"<\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "none": [
+        { "var": "integers" },
+        {
+          "<": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [] },
+    "result": true
+  },
+  {
+    "description": "{\"none\":[{\"var\":\"items\"},{\">=\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "none": [
+        { "var": "items" },
+        {
+          ">=": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": false
+  },
+  {
+    "description": "{\"none\":[{\"var\":\"items\"},{\">\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "none": [
+        { "var": "items" },
+        {
+          ">": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": false
+  },
+  {
+    "description": "{\"none\":[{\"var\":\"items\"},{\"<\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "none": [
+        { "var": "items" },
+        {
+          "<": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": true
+  },
+  {
+    "description": "{\"none\":[{\"var\":\"items\"},{\">=\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "none": [
+        { "var": "items" },
+        {
+          ">=": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": { "items": [] },
+    "result": true
+  },
+  {
+    "description": "{\"some\":[{\"var\":\"integers\"},{\">=\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "some": [
+        { "var": "integers" },
+        {
+          ">=": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": true
+  },
+  {
+    "description": "{\"some\":[{\"var\":\"integers\"},{\"==\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "some": [
+        { "var": "integers" },
+        {
+          "==": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": true
+  },
+  {
+    "description": "{\"some\":[{\"var\":\"integers\"},{\"<\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "some": [
+        { "var": "integers" },
+        {
+          "<": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [1, 2, 3] },
+    "result": false
+  },
+  {
+    "description": "{\"some\":[{\"var\":\"integers\"},{\"<\":[{\"var\":\"\"},1]}]}",
+    "rule": {
+      "some": [
+        { "var": "integers" },
+        {
+          "<": [{ "var": "" }, 1]
+        }
+      ]
+    },
+    "data": { "integers": [] },
+    "result": false
+  },
+  {
+    "description": "{\"some\":[{\"var\":\"items\"},{\">=\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "some": [
+        { "var": "items" },
+        {
+          ">=": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": true
+  },
+  {
+    "description": "{\"some\":[{\"var\":\"items\"},{\">\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "some": [
+        { "var": "items" },
+        {
+          ">": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": true
+  },
+  {
+    "description": "{\"some\":[{\"var\":\"items\"},{\"<\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "some": [
+        { "var": "items" },
+        {
+          "<": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": {
+      "items": [
+        { "qty": 1, "sku": "apple" },
+        { "qty": 2, "sku": "banana" }
+      ]
+    },
+    "result": false
+  },
+  {
+    "description": "{\"some\":[{\"var\":\"items\"},{\">=\":[{\"var\":\"qty\"},1]}]}",
+    "rule": {
+      "some": [
+        { "var": "items" },
+        {
+          ">=": [{ "var": "qty" }, 1]
+        }
+      ]
+    },
+    "data": { "items": [] },
+    "result": false
   },
   "EOF"
 ]

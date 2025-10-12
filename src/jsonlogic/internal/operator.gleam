@@ -29,4 +29,8 @@ pub type Operator {
   DoubleNegate
   Filter
   Map
+  Reduce
+  All
+  None
+  Some
 }

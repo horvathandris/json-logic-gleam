@@ -95,6 +95,10 @@ pub fn evaluate_operation(
     operator.MissingSome -> missing_some(values, data)
     operator.Filter -> filter(values, data)
     operator.Map -> map(values, data)
+    operator.Reduce -> todo
+    operator.All -> all(values, data)
+    operator.None -> none(values, data)
+    operator.Some -> some(values, data)
   }
 }
 
@@ -636,6 +640,78 @@ fn map(
       use input <- result.try(decoding.dynamic_to_array(input))
       use evaluated <- result.map(list.try_map(input, evaluate(second, _)))
       dynamic.list(evaluated)
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn all(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  case values {
+    [first, second] -> {
+      use input <- result.try(evaluate(first, data))
+      use input <- result.try(decoding.dynamic_to_array(input))
+      use evaluated <- result.try(
+        list.try_map(input, evaluate_preserve_data(second, _)),
+      )
+      list.fold_until(evaluated, Ok(True), fn(_, value) {
+        case decoding.dynamic_to_bool(value.0) {
+          Ok(#(True, _)) -> list.Continue(Ok(True))
+          Ok(#(False, _)) -> list.Stop(Ok(False))
+          Error(e) -> list.Stop(Error(e))
+        }
+      })
+      |> result.map(dynamic.bool)
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn none(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  case values {
+    [first, second] -> {
+      use input <- result.try(evaluate(first, data))
+      use input <- result.try(decoding.dynamic_to_array(input))
+      use evaluated <- result.try(
+        list.try_map(input, evaluate_preserve_data(second, _)),
+      )
+      list.fold_until(evaluated, Ok(True), fn(_, value) {
+        case decoding.dynamic_to_bool(value.0) {
+          Ok(#(False, _)) -> list.Continue(Ok(True))
+          Ok(#(True, _)) -> list.Stop(Ok(False))
+          Error(e) -> list.Stop(Error(e))
+        }
+      })
+      |> result.map(dynamic.bool)
+    }
+    _ -> Error(error.InvalidArgumentsError)
+  }
+}
+
+fn some(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  case values {
+    [first, second] -> {
+      use input <- result.try(evaluate(first, data))
+      use input <- result.try(decoding.dynamic_to_array(input))
+      use evaluated <- result.try(
+        list.try_map(input, evaluate_preserve_data(second, _)),
+      )
+      list.fold_until(evaluated, Ok(False), fn(_, value) {
+        case decoding.dynamic_to_bool(value.0) {
+          Ok(#(False, _)) -> list.Continue(Ok(False))
+          Ok(#(True, _)) -> list.Stop(Ok(True))
+          Error(e) -> list.Stop(Error(e))
+        }
+      })
+      |> result.map(dynamic.bool)
     }
     _ -> Error(error.InvalidArgumentsError)
   }
