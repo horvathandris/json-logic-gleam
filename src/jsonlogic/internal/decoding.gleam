@@ -195,6 +195,7 @@ pub fn dynamic_to_float(
       |> Ok
     }
     "Nil" -> Ok(0.0)
+    "List" -> Error(error.NaNError)
 
     t -> panic as { "Cannot convert type: " <> t }
   }

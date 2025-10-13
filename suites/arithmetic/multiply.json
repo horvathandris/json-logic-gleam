@@ -150,5 +150,23 @@
     "rule": { "*": [{ "val": "x" }, { "val": "y" }] },
     "data": { "x": 8, "y": 2 },
     "result": 16
+  },
+  {
+    "description": "Multiply with string produces NaN",
+    "rule": { "*": ["Hey", 1] },
+    "error": { "type": "NaN" },
+    "data": null
+  },
+  {
+    "description": "Multiply with a single string produces NaN",
+    "rule": { "*": ["Hey"] },
+    "error": { "type": "NaN" },
+    "data": null
+  },
+  {
+    "description": "Multiply with Array produces NaN",
+    "rule": { "*": [[1], 1] },
+    "error": { "type": "NaN" },
+    "data": null
   }
 ]

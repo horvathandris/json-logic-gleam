@@ -1,0 +1,16 @@
+[
+  {
+    "description": "{\"reduce\":[{\"var\":\"integers\"},{\"+\":[{\"var\":\"current\"},{\"var\":\"accumulator\"}]},0]}",
+    "rule": {
+      "reduce": [
+        { "var": "integers" },
+        {
+          "+": [{ "var": "current" }, { "var": "accumulator" }]
+        },
+        0
+      ]
+    },
+    "data": { "integers": [1, 2, 3, 4] },
+    "result": 10
+  }
+]

@@ -3,9 +3,9 @@ import gleam/dynamic.{type Dynamic}
 import gleam/dynamic/decode
 import gleam/json
 import gleam/list
-import gleam/option.{type Option}
 import gleam/result
 import jsonlogic
+import jsonlogic/internal/error
 import simplifile
 
 pub type TestCase {
@@ -14,13 +14,18 @@ pub type TestCase {
     logic: Dynamic,
     data: Dynamic,
     result: ExpectedResult,
-    error: Option(Dynamic),
+    error: ExpectedError,
   )
 }
 
 pub type ExpectedResult {
   NoResult
   SomeResult(Dynamic)
+}
+
+pub type ExpectedError {
+  NoError
+  SomeError(error.EvaluationError)
 }
 
 pub type TestCaseResult {
@@ -33,7 +38,7 @@ pub fn run_test_cases(suite: TestSuite) -> List(#(String, TestCaseResult)) {
 }
 
 pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
-  // echo test_case
+  echo test_case
   let actual = jsonlogic.apply_dynamic(test_case.logic, test_case.data)
   // echo actual
 
@@ -43,7 +48,17 @@ pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
         True -> Passed
         False -> Failed
       }
-    NoResult -> panic as "Test case without result is not supported yet"
+    NoResult -> {
+      case test_case.error {
+        NoError ->
+          panic as "The test case has no expected result or expected error"
+        SomeError(e) ->
+          case Error(e) == actual {
+            True -> Passed
+            False -> Failed
+          }
+      }
+    }
   }
 
   #(test_case.description, test_case_result)
@@ -67,12 +82,18 @@ fn test_case_decoder() {
       |> decode.map(normalize_dynamic)
       |> decode.map(SomeResult),
   )
-  use error <- decode.optional_field(
-    "error",
-    option.None,
-    decode.optional(decode.dynamic),
-  )
+  use error <- decode.optional_field("error", NoError, error_decoder())
   TestCase(description:, logic:, data:, result:, error:)
+  |> decode.success
+}
+
+fn error_decoder() {
+  use error_type <- decode.field("type", decode.string)
+  case error_type {
+    "NaN" -> SomeError(error.NaNError)
+    "Invalid Arguments" -> SomeError(error.InvalidArgumentsError)
+    e -> panic as { "Unknown error type: " <> e }
+  }
   |> decode.success
 }
 

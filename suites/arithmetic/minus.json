@@ -55,6 +55,12 @@
     "data": null
   },
   {
+    "description": "Minus with zero operands is an error",
+    "rule": { "-": [] },
+    "error": { "type": "Invalid Arguments" },
+    "data": null
+  },
+  {
     "description": "Minus Operator with Single Operand, Direct (Number)",
     "rule": { "-": 1 },
     "result": -1,
@@ -114,5 +120,17 @@
     "rule": { "-": [{ "val": "x" }, { "val": "y" }] },
     "data": { "x": 1, "y": 2 },
     "result": -1
+  },
+  {
+    "description": "Subtraction with string produces NaN",
+    "rule": { "-": ["Hey", 1] },
+    "error": { "type": "NaN" },
+    "data": null
+  },
+  {
+    "description": "Subtraction with Array produces NaN",
+    "rule": { "-": [[1], 1] },
+    "error": { "type": "NaN" },
+    "data": null
   }
 ]
