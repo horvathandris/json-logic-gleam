@@ -38,7 +38,7 @@ pub fn run_test_cases(suite: TestSuite) -> List(#(String, TestCaseResult)) {
 }
 
 pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
-  echo test_case
+  // echo test_case
   let actual = jsonlogic.apply_dynamic(test_case.logic, test_case.data)
   // echo actual
 

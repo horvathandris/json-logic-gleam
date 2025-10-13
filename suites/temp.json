@@ -1,16 +1,8 @@
 [
   {
-    "description": "{\"reduce\":[{\"var\":\"integers\"},{\"+\":[{\"var\":\"current\"},{\"var\":\"accumulator\"}]},0]}",
-    "rule": {
-      "reduce": [
-        { "var": "integers" },
-        {
-          "+": [{ "var": "current" }, { "var": "accumulator" }]
-        },
-        0
-      ]
-    },
-    "data": { "integers": [1, 2, 3, 4] },
-    "result": 10
+    "description": "Addition with Array from context produces NaN",
+    "rule": { "+": [{ "val": "x" }, 1] },
+    "error": { "type": "NaN" },
+    "data": { "x": [1] }
   }
 ]

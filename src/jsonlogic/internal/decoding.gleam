@@ -12,6 +12,7 @@ import gleam/string
 import jsonlogic/error
 import jsonlogic/internal/operator
 import jsonlogic/internal/rule
+import lenient_parse
 
 pub fn decode_rule_string(
   rule: String,
@@ -95,6 +96,7 @@ pub fn decode_operator(
   operator: String,
 ) -> Result(operator.Operator, error.EvaluationError) {
   case operator {
+    "val" -> Ok(operator.Value)
     "var" -> Ok(operator.Variable)
     "missing" -> Ok(operator.Missing)
     "missing_some" -> Ok(operator.MissingSome)
@@ -175,9 +177,7 @@ pub fn dynamic_to_float(
       case decoded {
         "" -> Ok(0.0)
         _ ->
-          int.parse(decoded)
-          |> result.map(int.to_float)
-          |> result.try_recover(fn(_) { float.parse(decoded) })
+          lenient_parse.to_float(decoded)
           |> result.map_error(fn(_) { error.NaNError })
       }
     }
@@ -195,9 +195,7 @@ pub fn dynamic_to_float(
       |> Ok
     }
     "Nil" -> Ok(0.0)
-    "List" -> Error(error.NaNError)
-
-    t -> panic as { "Cannot convert type: " <> t }
+    _ -> Error(error.NaNError)
   }
 }
 

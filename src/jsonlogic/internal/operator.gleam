@@ -1,4 +1,5 @@
 pub type Operator {
+  Value
   Variable
   Missing
   MissingSome

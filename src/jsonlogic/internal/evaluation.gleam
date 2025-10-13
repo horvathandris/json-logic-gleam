@@ -90,7 +90,7 @@ pub fn evaluate_operation(
     operator.Substring -> substring(values, data)
     operator.Merge -> merge(values, data)
     operator.If -> if_(values, data)
-    operator.Variable -> variable(values, data)
+    operator.Value | operator.Variable -> variable(values, data)
     operator.Missing -> missing(values, data)
     operator.MissingSome -> missing_some(values, data)
     operator.Filter -> filter(values, data)
@@ -228,6 +228,7 @@ fn double_negate(
   data: dynamic.Dynamic,
 ) -> Result(Bool, error.EvaluationError) {
   case values {
+    [] -> Ok(False)
     [value] -> {
       use evaluated_value <- result.try(evaluate(value, data))
       decoding.dynamic_to_bool(evaluated_value)
