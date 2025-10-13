@@ -9,7 +9,7 @@ import gleam/list
 import gleam/option
 import gleam/result
 import gleam/string
-import jsonlogic/internal/error
+import jsonlogic/error
 import jsonlogic/internal/operator
 import jsonlogic/internal/rule
 

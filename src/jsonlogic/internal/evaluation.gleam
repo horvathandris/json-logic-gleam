@@ -6,8 +6,8 @@ import gleam/list
 import gleam/option
 import gleam/result
 import gleam/string
+import jsonlogic/error
 import jsonlogic/internal/decoding
-import jsonlogic/internal/error
 import jsonlogic/internal/operator
 import jsonlogic/internal/rule
 import jsonlogic/internal/util

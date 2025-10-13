@@ -5,7 +5,7 @@ import gleam/json
 import gleam/list
 import gleam/result
 import jsonlogic
-import jsonlogic/internal/error
+import jsonlogic/error
 import simplifile
 
 pub type TestCase {

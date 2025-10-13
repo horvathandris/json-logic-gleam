@@ -4,7 +4,7 @@ import gleam/float
 import gleam/int
 import gleam/list
 import gleam/result
-import jsonlogic/internal/error
+import jsonlogic/error
 
 pub fn comparison_reduce(
   values: List(Float),

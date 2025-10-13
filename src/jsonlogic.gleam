@@ -1,7 +1,7 @@
 import gleam/dynamic
 import gleam/result
+import jsonlogic/error
 import jsonlogic/internal/decoding
-import jsonlogic/internal/error
 import jsonlogic/internal/evaluation
 
 pub fn apply(
