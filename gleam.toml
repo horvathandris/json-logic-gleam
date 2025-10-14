@@ -1,5 +1,5 @@
 name = "jsonlogic"
-version = "1.0.6"
+version = "1.0.7"
 description = "A Gleam implementation of JSONLogic"
 licences = ["Apache-2.0"]
 repository = { type = "github", user = "horvathandris", repo = "json-logic-gleam" }
