@@ -90,7 +90,8 @@ pub fn evaluate_operation(
     operator.Substring -> substring(values, data)
     operator.Merge -> merge(values, data)
     operator.If -> if_(values, data)
-    operator.Value | operator.Variable -> variable(values, data)
+    operator.Value -> value(values, data)
+    operator.Variable -> variable(values, data)
     operator.Missing -> missing(values, data)
     operator.MissingSome -> missing_some(values, data)
     operator.Filter -> filter(values, data)
@@ -544,6 +545,18 @@ fn do_if(values: List(#(Bool, dynamic.Dynamic))) {
     [#(False, _), _, #(_, third)] -> Ok(third)
     [_, _, ..rest] -> do_if(rest)
   }
+}
+
+fn value(
+  values: List(rule.Rule),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
+  use string_values <- result.try(list.try_map(
+    evaluated_values,
+    decoding.dynamic_to_string,
+  ))
+  decoding.decode_data_val(string_values, data)
 }
 
 fn variable(

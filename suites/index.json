@@ -1,5 +1,6 @@
 [
   "compatible.json",
+  "val.json",
   "arithmetic/divide.json",
   "arithmetic/modulo.json",
   "arithmetic/plus.json",

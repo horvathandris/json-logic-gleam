@@ -310,21 +310,30 @@ pub fn decode_data(
     key == dynamic.list([])
   {
     True, _, _ | _, True, _ | _, _, True -> Ok(data)
-    _, _, _ -> do_decode_data(key, data, default)
+    _, _, _ -> {
+      use key <- result.map(dynamic_to_string(key))
+      let keys = string.split(key, on: ".")
+      do_decode_data(keys, data, default)
+    }
   }
 }
 
+pub fn decode_data_val(
+  key: List(String),
+  data: dynamic.Dynamic,
+) -> Result(dynamic.Dynamic, error.EvaluationError) {
+  Ok(do_decode_data(key, data, option.None))
+}
+
 fn do_decode_data(
-  key: dynamic.Dynamic,
+  key: List(String),
   data: dynamic.Dynamic,
   or default: option.Option(dynamic.Dynamic),
-) -> Result(dynamic.Dynamic, error.EvaluationError) {
-  use key <- result.map(dynamic_to_string(key))
-  let keys = string.split(key, on: ".")
-  decode.run(data, decode.at(keys, decode.dynamic))
+) -> dynamic.Dynamic {
+  decode.run(data, decode.at(key, decode.dynamic))
   |> result.try_recover(fn(e) {
     let indices =
-      list.try_map(keys, int.parse)
+      list.try_map(key, int.parse)
       |> result.replace_error(e)
     use indices <- result.try(indices)
     decode.run(data, decode.at(indices, decode.dynamic))
