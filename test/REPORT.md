@@ -1243,7 +1243,7 @@
 | Divide with dynamic unary array | ❌ |
 | Divide with dynamic array | ❌ |
 
-# ./suites/control/not.json — 21/23 passed
+# ./suites/control/not.json — 22/23 passed
 
 | Test | Result |
 |------|--------|
@@ -1262,7 +1262,7 @@
 | NOT with non-array argument false | ✅ |
 | NOT with non-array argument 0 | ✅ |
 | NOT with non-array argument 1 | ✅ |
-| NOT without arguments returns true | ❌ |
+| NOT without arguments returns true | ✅ |
 | NOT with nested var operation | ✅ |
 | NOT with nested comparison | ✅ |
 | NOT with nested AND | ✅ |
@@ -1271,7 +1271,7 @@
 | Double NOT preserves original boolean | ✅ |
 | NOT with undefined variable | ✅ |
 
-# ./suites/control/and.json — 19/25 passed
+# ./suites/control/and.json — 20/25 passed
 
 | Test | Result |
 |------|--------|
@@ -1295,7 +1295,7 @@
 | 0 is falsy, so it is returned | ✅ |
 | Empty string is falsy, so it is returned | ✅ |
 | 0 as a string is truthy, so the last truthy value is returned | ✅ |
-| And with no arguments should return false | ❌ |
+| And with no arguments should return false | ✅ |
 | And with non-array arguments should throw | ❌ |
 | And will not interpret the second argument if the first is false | ❌ |
 | And will not interpret the second argument if the first is falsy | ❌ |

@@ -189,6 +189,7 @@ fn negate(
   data: dynamic.Dynamic,
 ) -> Result(Bool, error.EvaluationError) {
   case values {
+    [] -> Ok(True)
     [value] -> {
       use evaluated_value <- result.try(evaluate(value, data))
       use #(bool_value, _) <- result.map(decoding.dynamic_to_bool(
@@ -243,7 +244,7 @@ fn and(
     evaluated_values,
     decoding.dynamic_to_bool,
   ))
-  list.fold_until(bool_values, dynamic.bool(True), fn(_, value) {
+  list.fold_until(bool_values, dynamic.bool(False), fn(_, value) {
     case value.0 {
       True -> list.Continue(value.1)
       False -> list.Stop(value.1)
