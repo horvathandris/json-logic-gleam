@@ -493,6 +493,7 @@ fn merge(
     evaluated_values,
     decoding.dynamic_to_array,
   ))
+  let array_values = list.map(array_values, result.unwrap(_, []))
   case array_values {
     [] -> Ok(dynamic.list([]))
     _ ->
@@ -578,6 +579,7 @@ fn missing_some(
     [first, second] -> {
       use minimum_keys <- result.try(decoding.dynamic_to_int(first))
       use keys <- result.try(decoding.dynamic_to_array(second))
+      let keys = result.unwrap(keys, [])
       use missing_keys <- result.map(do_missing(keys, data))
       case list.length(keys) - list.length(missing_keys) >= minimum_keys {
         True -> dynamic.list([])
@@ -596,6 +598,7 @@ fn filter(
     [first, second] -> {
       use input <- result.try(evaluate(first, data))
       use input <- result.try(decoding.dynamic_to_array(input))
+      let input = result.unwrap(input, [])
       use evaluated <- result.try(
         list.try_map(input, evaluate_preserve_data(second, _)),
       )
@@ -625,6 +628,7 @@ fn map(
     [first, second] -> {
       use input <- result.try(evaluate(first, data))
       use input <- result.try(decoding.dynamic_to_array(input))
+      let input = result.unwrap(input, [])
       use evaluated <- result.map(list.try_map(input, evaluate(second, _)))
       dynamic.list(evaluated)
     }
@@ -640,6 +644,7 @@ fn reduce(
     [input, function, initial_value] -> {
       use input <- result.try(evaluate(input, data))
       use input <- result.try(decoding.dynamic_to_array(input))
+      let input = result.unwrap(input, [])
       use initial_value <- result.try(evaluate(initial_value, data))
       list.try_fold(input, initial_value, fn(accumulator, current) {
         evaluate(
@@ -663,17 +668,22 @@ fn all(
     [first, second] -> {
       use input <- result.try(evaluate(first, data))
       use input <- result.try(decoding.dynamic_to_array(input))
-      use evaluated <- result.try(
-        list.try_map(input, evaluate_preserve_data(second, _)),
-      )
-      list.fold_until(evaluated, Ok(False), fn(_, value) {
-        case decoding.dynamic_to_bool(value.0) {
-          Ok(#(True, _)) -> list.Continue(Ok(True))
-          Ok(#(False, _)) -> list.Stop(Ok(False))
-          Error(e) -> list.Stop(Error(e))
+      case input {
+        Error(_) -> Error(error.InvalidArgumentsError)
+        Ok(input) -> {
+          use evaluated <- result.try(
+            list.try_map(input, evaluate_preserve_data(second, _)),
+          )
+          list.fold_until(evaluated, Ok(False), fn(_, value) {
+            case decoding.dynamic_to_bool(value.0) {
+              Ok(#(True, _)) -> list.Continue(Ok(True))
+              Ok(#(False, _)) -> list.Stop(Ok(False))
+              Error(e) -> list.Stop(Error(e))
+            }
+          })
+          |> result.map(dynamic.bool)
         }
-      })
-      |> result.map(dynamic.bool)
+      }
     }
     _ -> Error(error.InvalidArgumentsError)
   }
@@ -687,17 +697,22 @@ fn none(
     [first, second] -> {
       use input <- result.try(evaluate(first, data))
       use input <- result.try(decoding.dynamic_to_array(input))
-      use evaluated <- result.try(
-        list.try_map(input, evaluate_preserve_data(second, _)),
-      )
-      list.fold_until(evaluated, Ok(True), fn(_, value) {
-        case decoding.dynamic_to_bool(value.0) {
-          Ok(#(False, _)) -> list.Continue(Ok(True))
-          Ok(#(True, _)) -> list.Stop(Ok(False))
-          Error(e) -> list.Stop(Error(e))
+      case input {
+        Error(_) -> Error(error.InvalidArgumentsError)
+        Ok(input) -> {
+          use evaluated <- result.try(
+            list.try_map(input, evaluate_preserve_data(second, _)),
+          )
+          list.fold_until(evaluated, Ok(True), fn(_, value) {
+            case decoding.dynamic_to_bool(value.0) {
+              Ok(#(False, _)) -> list.Continue(Ok(True))
+              Ok(#(True, _)) -> list.Stop(Ok(False))
+              Error(e) -> list.Stop(Error(e))
+            }
+          })
+          |> result.map(dynamic.bool)
         }
-      })
-      |> result.map(dynamic.bool)
+      }
     }
     _ -> Error(error.InvalidArgumentsError)
   }
@@ -711,17 +726,22 @@ fn some(
     [first, second] -> {
       use input <- result.try(evaluate(first, data))
       use input <- result.try(decoding.dynamic_to_array(input))
-      use evaluated <- result.try(
-        list.try_map(input, evaluate_preserve_data(second, _)),
-      )
-      list.fold_until(evaluated, Ok(False), fn(_, value) {
-        case decoding.dynamic_to_bool(value.0) {
-          Ok(#(False, _)) -> list.Continue(Ok(False))
-          Ok(#(True, _)) -> list.Stop(Ok(True))
-          Error(e) -> list.Stop(Error(e))
+      case input {
+        Error(_) -> Error(error.InvalidArgumentsError)
+        Ok(input) -> {
+          use evaluated <- result.try(
+            list.try_map(input, evaluate_preserve_data(second, _)),
+          )
+          list.fold_until(evaluated, Ok(False), fn(_, value) {
+            case decoding.dynamic_to_bool(value.0) {
+              Ok(#(False, _)) -> list.Continue(Ok(False))
+              Ok(#(True, _)) -> list.Stop(Ok(True))
+              Error(e) -> list.Stop(Error(e))
+            }
+          })
+          |> result.map(dynamic.bool)
         }
-      })
-      |> result.map(dynamic.bool)
+      }
     }
     _ -> Error(error.InvalidArgumentsError)
   }

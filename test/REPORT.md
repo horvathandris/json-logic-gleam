@@ -51,7 +51,7 @@
 | === with static non-array argument throws | ✅ |
 | !== with static non-array argument throws | ✅ |
 
-# ./suites/array/all.json — 10/12 passed
+# ./suites/array/all.json — 12/12 passed
 
 | Test | Result |
 |------|--------|
@@ -60,8 +60,8 @@
 | All objects meet age requirement | ✅ |
 | Not all objects meet criteria | ✅ |
 | Empty array returns false | ✅ |
-| Null array should throw | ❌ |
-| Missing array returns error | ❌ |
+| Null array should throw | ✅ |
+| Missing array returns error | ✅ |
 | Null predicate returns false | ✅ |
 | All with compound conditions | ✅ |
 | All with nested array operations | ✅ |
@@ -406,7 +406,7 @@
 | {"some":[{"var":"items"},{"<":[{"var":"qty"},1]}]} | ✅ |
 | {"some":[{"var":"items"},{">=":[{"var":"qty"},1]}]} | ✅ |
 
-# ./suites/array/some.json — 11/13 passed
+# ./suites/array/some.json — 13/13 passed
 
 | Test | Result |
 |------|--------|
@@ -415,8 +415,8 @@
 | Some objects meet age requirement | ✅ |
 | Some objects meet stock threshold | ✅ |
 | Empty array returns false | ✅ |
-| Null array should throw | ❌ |
-| Missing array returns error | ❌ |
+| Null array should throw | ✅ |
+| Missing array returns error | ✅ |
 | Null predicate returns false | ✅ |
 | Some with compound conditions | ✅ |
 | Some with nested array operations | ✅ |
@@ -957,7 +957,7 @@
 | !== with (1, true) | ✅ |
 | !== with (0, false) | ✅ |
 
-# ./suites/array/none.json — 11/13 passed
+# ./suites/array/none.json — 13/13 passed
 
 | Test | Result |
 |------|--------|
@@ -966,8 +966,8 @@
 | None of the objects are underage | ✅ |
 | None of items are out of stock | ✅ |
 | Empty array returns true | ✅ |
-| Null array should throw | ❌ |
-| Missing array returns error | ❌ |
+| Null array should throw | ✅ |
+| Missing array returns error | ✅ |
 | Null predicate returns true | ✅ |
 | None with compound conditions | ✅ |
 | None with nested array operations | ✅ |

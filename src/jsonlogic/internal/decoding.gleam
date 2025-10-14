@@ -14,6 +14,13 @@ import jsonlogic/internal/operator
 import jsonlogic/internal/rule
 import lenient_parse
 
+pub type Nullable(a) =
+  Result(a, Nil)
+
+fn to_nullable(value: option.Option(a)) -> Nullable(a) {
+  option.to_result(value, Nil)
+}
+
 pub fn decode_rule_string(
   rule: String,
 ) -> Result(rule.Rule, error.EvaluationError) {
@@ -252,19 +259,14 @@ pub fn dynamic_to_string(
 
 pub fn dynamic_to_array(
   input: dynamic.Dynamic,
-) -> Result(List(dynamic.Dynamic), error.EvaluationError) {
+) -> Result(Nullable(List(dynamic.Dynamic)), error.EvaluationError) {
   decode.run(
     input,
     decode.one_of(
       decode.optional(decode.list(decode.dynamic))
-        |> decode.map(fn(value) {
-          case value {
-            option.None -> []
-            option.Some(value) -> value
-          }
-        }),
+        |> decode.map(to_nullable),
       or: [
-        decode.dynamic |> decode.map(list.wrap),
+        decode.dynamic |> decode.map(list.wrap) |> decode.map(Ok),
       ],
     ),
   )
