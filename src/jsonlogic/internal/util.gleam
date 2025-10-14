@@ -95,3 +95,10 @@ pub fn flatten(values: List(dynamic.Dynamic)) -> List(dynamic.Dynamic) {
     )
   decoded
 }
+
+pub fn normalize_dynamic(value: dynamic.Dynamic) -> dynamic.Dynamic {
+  case dynamic.classify(value) {
+    "Nil" -> dynamic.nil()
+    _ -> value
+  }
+}

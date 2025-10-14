@@ -21,6 +21,7 @@ pub fn evaluate(
     rule.Operation(operator, values) ->
       evaluate_operation(operator, values, data)
   }
+  |> result.map(util.normalize_dynamic)
 }
 
 pub fn evaluate_literal(
@@ -552,11 +553,7 @@ fn value(
   data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   use evaluated_values <- result.try(list.try_map(values, evaluate(_, data)))
-  use string_values <- result.try(list.try_map(
-    evaluated_values,
-    decoding.dynamic_to_string,
-  ))
-  decoding.decode_data_val(string_values, data)
+  decoding.decode_data_val(evaluated_values, data)
 }
 
 fn variable(

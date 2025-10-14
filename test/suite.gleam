@@ -6,6 +6,7 @@ import gleam/list
 import gleam/result
 import jsonlogic
 import jsonlogic/error
+import jsonlogic/internal/util
 import simplifile
 
 pub type TestCase {
@@ -64,13 +65,6 @@ pub fn run_test_case(test_case: TestCase) -> #(String, TestCaseResult) {
   #(test_case.description, test_case_result)
 }
 
-fn normalize_dynamic(value: Dynamic) -> Dynamic {
-  case dynamic.classify(value) {
-    "Nil" -> dynamic.nil()
-    _ -> value
-  }
-}
-
 fn test_case_decoder() {
   use description <- decode.field("description", decode.string)
   use logic <- decode.field("rule", decode.dynamic)
@@ -79,7 +73,7 @@ fn test_case_decoder() {
     "result",
     NoResult,
     decode.dynamic
-      |> decode.map(normalize_dynamic)
+      |> decode.map(util.normalize_dynamic)
       |> decode.map(SomeResult),
   )
   use error <- decode.optional_field("error", NoError, error_decoder())

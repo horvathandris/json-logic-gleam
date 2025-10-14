@@ -313,32 +313,29 @@ pub fn decode_data(
     _, _, _ -> {
       use key <- result.map(dynamic_to_string(key))
       let keys = string.split(key, on: ".")
-      do_decode_data(keys, data, default)
+      list.map(keys, fn(k) {
+        int.parse(k)
+        |> result.map(dynamic.int)
+        |> result.unwrap(dynamic.string(k))
+      })
+      |> do_decode_data(data, default)
     }
   }
 }
 
 pub fn decode_data_val(
-  key: List(String),
+  key: List(dynamic.Dynamic),
   data: dynamic.Dynamic,
 ) -> Result(dynamic.Dynamic, error.EvaluationError) {
   Ok(do_decode_data(key, data, option.None))
 }
 
 fn do_decode_data(
-  key: List(String),
+  key: List(dynamic.Dynamic),
   data: dynamic.Dynamic,
   or default: option.Option(dynamic.Dynamic),
 ) -> dynamic.Dynamic {
   decode.run(data, decode.at(key, decode.dynamic))
-  |> result.try_recover(fn(e) {
-    let indices =
-      list.try_map(key, int.parse)
-      |> result.replace_error(e)
-    use indices <- result.try(indices)
-    decode.run(data, decode.at(indices, decode.dynamic))
-    |> result.replace_error(e)
-  })
   |> result.lazy_unwrap(fn() {
     case default {
       option.Some(default) -> default
