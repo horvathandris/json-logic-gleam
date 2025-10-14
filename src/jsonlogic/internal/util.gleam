@@ -5,6 +5,7 @@ import gleam/int
 import gleam/list
 import gleam/result
 import jsonlogic/error
+import jsonlogic/internal/decoding
 
 pub fn comparison_reduce(
   values: List(Float),
@@ -100,5 +101,41 @@ pub fn normalize_dynamic(value: dynamic.Dynamic) -> dynamic.Dynamic {
   case dynamic.classify(value) {
     "Nil" -> dynamic.nil()
     _ -> value
+  }
+}
+
+pub fn loose_equals(
+  first: dynamic.Dynamic,
+  second: dynamic.Dynamic,
+) -> Result(Bool, error.EvaluationError) {
+  case dynamic.classify(first), dynamic.classify(second) {
+    x, y if x == y -> Ok(first == second)
+
+    "Bool", _ -> {
+      let assert Ok(first) = decode.run(first, decode.bool)
+      decoding.bool_to_float(first)
+      |> dynamic.float
+      |> loose_equals(second)
+    }
+    _, "Bool" -> {
+      let assert Ok(second) = decode.run(second, decode.bool)
+      decoding.bool_to_float(second)
+      |> dynamic.float
+      |> loose_equals(first)
+    }
+    "Int", "String"
+    | "Float", "String"
+    | "String", "Float"
+    | "String", "Int"
+    | "Float", "Int"
+    | "Int", "Float"
+    -> {
+      use first <- result.try(decoding.dynamic_to_float(first))
+      use second <- result.map(decoding.dynamic_to_float(second))
+      dynamic.float(first) == dynamic.float(second)
+    }
+    "Nil", _ -> Ok(dynamic.nil() == second)
+    _, "Nil" -> Ok(dynamic.nil() == first)
+    _, _ -> Ok(False)
   }
 }

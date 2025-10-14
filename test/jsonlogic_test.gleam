@@ -11,7 +11,7 @@ pub fn main() {
 pub fn run_test_suites__test() {
   suite.load_test_suites("suites")
   |> collect_test_results
-  |> reporting.test_report
+  |> reporting.produce_test_report
 }
 
 fn collect_test_results(

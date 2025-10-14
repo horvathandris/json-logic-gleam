@@ -12,7 +12,7 @@ gleam add jsonlogic@1
 import jsonlogic
 
 pub fn main() {
-  echo jsonlogic.apply(" { \"==\" : [1, 1] } ") // Ok(True)
+  echo jsonlogic.apply(" { \"==\" : [1, 1] } ", to: dynamic.nil()) // Ok(True)
 }
 ```
 
@@ -23,6 +23,7 @@ Further documentation can be found at <https://hexdocs.pm/jsonlogic>.
 ### Testing
 
 The library is tested against the [JSON Logic Compatibility Tables](https://github.com/json-logic/compat-tables).
+See [the test report](https://github.com/horvathandris/json-logic-gleam/blob/main/test/REPORT.md) for details.
 
 ```sh
 gleam test  # Run the test suites

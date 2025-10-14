@@ -1,8 +1,0 @@
-[
-  {
-    "description": "Addition with Array from context produces NaN",
-    "rule": { "+": [{ "val": "x" }, 1] },
-    "error": { "type": "NaN" },
-    "data": { "x": [1] }
-  }
-]

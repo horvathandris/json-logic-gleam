@@ -50,13 +50,15 @@ pub fn evaluate_operation(
       abstract_equals(values, data)
       |> result.map(dynamic.bool)
     operator.AbstractNotEquals ->
-      abstract_not_equals(values, data)
+      abstract_equals(values, data)
+      |> result.map(bool.negate)
       |> result.map(dynamic.bool)
     operator.StrictEquals ->
       strict_equals(values, data)
       |> result.map(dynamic.bool)
     operator.StrictNotEquals ->
-      strict_not_equals(values, data)
+      strict_equals(values, data)
+      |> result.map(bool.negate)
       |> result.map(dynamic.bool)
     operator.GreaterThan ->
       greater_than(values, data)
@@ -117,20 +119,7 @@ fn abstract_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
     [first, second] -> {
       use first <- result.try(evaluate(first, data))
       use second <- result.try(evaluate(second, data))
-      use #(first, second) <- result.try(decoding.coerce_types(first, second))
-      Ok(first == second)
-    }
-    _ -> Error(error.InvalidArgumentsError)
-  }
-}
-
-fn abstract_not_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
-  case values {
-    [first, second] -> {
-      use first <- result.try(evaluate(first, data))
-      use second <- result.try(evaluate(second, data))
-      use #(first, second) <- result.try(decoding.coerce_types(first, second))
-      Ok(first != second)
+      util.loose_equals(first, second)
     }
     _ -> Error(error.InvalidArgumentsError)
   }
@@ -142,20 +131,6 @@ fn strict_equals(values: List(rule.Rule), data: dynamic.Dynamic) {
       use first <- result.try(evaluate(first, data))
       use second <- result.try(evaluate(second, data))
       Ok(first == second)
-    }
-    _ -> Error(error.InvalidArgumentsError)
-  }
-}
-
-fn strict_not_equals(
-  values: List(rule.Rule),
-  data: dynamic.Dynamic,
-) -> Result(Bool, error.EvaluationError) {
-  case values {
-    [first, second] -> {
-      use first <- result.try(evaluate(first, data))
-      use second <- result.try(evaluate(second, data))
-      Ok(first != second)
     }
     _ -> Error(error.InvalidArgumentsError)
   }

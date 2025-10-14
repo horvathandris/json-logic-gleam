@@ -8,6 +8,7 @@ import jsonlogic
 import jsonlogic/error
 import jsonlogic/internal/util
 import simplifile
+import test_util
 
 pub type TestCase {
   TestCase(
@@ -86,7 +87,7 @@ fn error_decoder() {
   case error_type {
     "NaN" -> SomeError(error.NaNError)
     "Invalid Arguments" -> SomeError(error.InvalidArgumentsError)
-    e -> panic as { "Unknown error type: " <> e }
+    e -> SomeError(error.CustomError(e))
   }
   |> decode.success
 }
@@ -98,7 +99,7 @@ pub type TestSuite {
 pub fn load_test_suites(suites_directory: String) -> List(TestSuite) {
   // load all suites from "../suites/index.json"
   let assert Ok(suites_directory) =
-    do_find_root(".")
+    test_util.do_find_root(".")
     |> result.map(filepath.join(_, suites_directory))
 
   let assert Ok(suites_file) =
@@ -132,14 +133,5 @@ fn parse_test_cases(suite: List(Dynamic)) -> List(TestCase) {
       decode.run(test_case, test_case_decoder())
       |> result.map_error(fn(_) { Nil })
     _ -> Error(Nil)
-  }
-}
-
-fn do_find_root(path: String) -> Result(String, simplifile.FileError) {
-  let manifest = filepath.join(path, "gleam.toml")
-  case simplifile.is_file(manifest) {
-    Ok(True) -> Ok(path)
-    Ok(False) -> do_find_root(filepath.join(path, ".."))
-    Error(reason) -> Error(reason)
   }
 }

@@ -6,6 +6,9 @@ import jsonlogic/internal/evaluation
 
 /// Apply a JSONLogic rule to dynamic data.
 ///
+/// This function parses the string rule via `json.parse` and then
+/// evaluates it using `jsonlogic.apply_dynamic`.
+///
 /// ## Examples
 ///
 /// ```gleam
@@ -29,37 +32,19 @@ pub fn apply(
 
 /// Apply a dynamic JSONLogic rule to dynamic data.
 ///
+/// This function should be used when the rule is already parsed via `json.parse`
+/// or other means.
+///
 /// ## Examples
 ///
 /// ```gleam
 /// let rules =
-///   dynamic.properties([
-///     #(
-///       dynamic.string("and"),
-///       dynamic.list([
-///         dynamic.properties([
-///           #(
-///             dynamic.string("<"),
-///             dynamic.list([
-///               dynamic.properties([
-///                 #(dynamic.string("var"), dynamic.string("temp")),
-///               ]),
-///               dynamic.int(110),
-///             ]),
-///           ),
-///           #(
-///             dynamic.string("=="),
-///             dynamic.list([
-///               dynamic.properties([
-///                 #(dynamic.string("var"), dynamic.string("pie.filling")),
-///               ]),
-///               dynamic.string("apple"),
-///             ]),
-///           ),
-///         ]),
-///       ]),
-///     ),
-///   ])
+///   "
+///   { \"and\" : [
+///     {\"<\" : [ { \"var\" : \"temp\" }, 110 ]},
+///     {\"==\" : [ { \"var\" : \"pie.filling\" }, \"apple\" ] }
+///   ] }
+///   "
 ///
 /// let data =
 ///   dynamic.properties([
@@ -72,8 +57,9 @@ pub fn apply(
 ///     ),
 ///   ])
 ///
-/// jsonlogic.apply(rules, data);
-/// // -> True
+/// use parsed_rules <- result.map(json.parse(rules, decode.dynamic))
+/// jsonlogic.apply_dynamic(parsed_rules, data)
+/// // -> Ok(True)
 /// ```
 ///
 pub fn apply_dynamic(
