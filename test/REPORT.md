@@ -1,4 +1,4 @@
-# ./suites/string/cat.json — 8/9 passed
+# ./suites/string/cat.json — 9/9 passed
 
 | Test | Result |
 |------|--------|
@@ -9,7 +9,7 @@
 | Cat with mixed types | ✅ |
 | Cat with multiple arguments | ✅ |
 | Cat with no arguments returns empty string | ✅ |
-| Cat with null values | ❌ |
+| Cat with null values | ✅ |
 | Cat with boolean values | ✅ |
 
 # ./suites/iterators.extra.json — 10/34 passed
@@ -105,7 +105,7 @@
 | Plus Operator with Single Operand, Object Input Produces NaN | ❌ |
 | Plus Operator with Single Operand, Direct Object Input Produces NaN | ❌ |
 
-# ./suites/truthiness.json — 11/13 passed
+# ./suites/truthiness.json — 12/13 passed
 
 | Test | Result |
 |------|--------|
@@ -118,7 +118,7 @@
 | Truthy: {} | ❌ |
 | Falsey: '' | ✅ |
 | Falsey: null | ✅ |
-| Truthy: Zero Key Object | ❌ |
+| Truthy: Zero Key Object | ✅ |
 | Truthy: Single Key Object | ✅ |
 | Truthy: Multi Key Object | ✅ |
 | Truthy: Single Key Object (Empty Key) | ✅ |

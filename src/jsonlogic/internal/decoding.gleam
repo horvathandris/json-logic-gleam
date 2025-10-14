@@ -224,11 +224,7 @@ pub fn dynamic_to_bool(
       Ok(#(decoded != [], input))
     }
     "Nil" -> Ok(#(False, input))
-    "Dict" -> {
-      let assert Ok(decoded) =
-        decode.run(input, decode.dict(decode.dynamic, decode.dynamic))
-      Ok(#(dict.size(decoded) != 0, input))
-    }
+    "Dict" -> Ok(#(True, input))
 
     t -> panic as { "Cannot convert type: " <> t }
   }
@@ -239,11 +235,17 @@ pub fn dynamic_to_string(
 ) -> Result(String, error.EvaluationError) {
   decode.run(
     input,
-    decode.one_of(decode.string, or: [
-      decode.float |> decode.map(float.to_string),
-      decode.int |> decode.map(int.to_string),
-      decode.bool |> decode.map(bool.to_string) |> decode.map(string.lowercase),
-    ]),
+    decode.one_of(
+      decode.optional(decode.string)
+        |> decode.map(option.unwrap(_, "")),
+      or: [
+        decode.float |> decode.map(float.to_string),
+        decode.int |> decode.map(int.to_string),
+        decode.bool
+          |> decode.map(bool.to_string)
+          |> decode.map(string.lowercase),
+      ],
+    ),
   )
   |> result.map_error(error.DecodeError)
 }
